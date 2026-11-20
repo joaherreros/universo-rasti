@@ -1411,7 +1411,55 @@ const RastiApp = (() => {
     return false;
   }
 
+  // ==========================================================================
+  // MODO APAISADO (LANDSCAPE) FORZADO EN MÓVILES Y PANTALLAS COMPACTAS
+  // ==========================================================================
+  function syncMobileLandscapeViewport() {
+    const tablet = document.getElementById('tablet-frame');
+    if (!tablet) return;
+
+    const vv = window.visualViewport;
+    const w = Math.round(vv ? vv.width : (document.documentElement.clientWidth || window.innerWidth));
+    const h = Math.round(vv ? vv.height : (document.documentElement.clientHeight || window.innerHeight));
+    const isTouch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    const isPortrait = w < h;
+    const isCompactOrMobile = isPortrait || isTouch || w < 1200 || h < 760;
+
+    if (isCompactOrMobile) {
+      document.body.classList.add('mobile-forced-landscape');
+
+      const landW = isPortrait ? h : w;
+      const landH = isPortrait ? w : h;
+      const aspect = landW / Math.max(1, landH);
+
+      let virtualH = 720;
+      let virtualW = Math.round(virtualH * aspect);
+      if (virtualW < 1160) {
+        virtualW = 1160;
+        virtualH = Math.round(virtualW / aspect);
+      }
+
+      const scale = landW / virtualW;
+
+      tablet.style.width = `${virtualW}px`;
+      tablet.style.height = `${virtualH}px`;
+      tablet.style.left = `${w / 2}px`;
+      tablet.style.top = `${h / 2}px`;
+      tablet.style.transform = isPortrait
+        ? `translate(-50%, -50%) rotate(90deg) scale(${scale})`
+        : `translate(-50%, -50%) scale(${scale})`;
+    } else {
+      document.body.classList.remove('mobile-forced-landscape');
+      tablet.style.width = '';
+      tablet.style.height = '';
+      tablet.style.left = '';
+      tablet.style.top = '';
+      tablet.style.transform = '';
+    }
+  }
+
   function init() {
+    syncMobileLandscapeViewport();
     updateTopHud();
     renderPersonalizacion();
     renderModos();
@@ -1428,6 +1476,14 @@ const RastiApp = (() => {
     }
 
     window.addEventListener('hashchange', handleHashRoute);
+    window.addEventListener('resize', syncMobileLandscapeViewport);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', syncMobileLandscapeViewport);
+    }
+    window.addEventListener('orientationchange', () => {
+      setTimeout(syncMobileLandscapeViewport, 80);
+      setTimeout(syncMobileLandscapeViewport, 250);
+    });
   }
 
   document.addEventListener('DOMContentLoaded', init);
