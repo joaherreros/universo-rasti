@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Universo Rasti — Prototipo Web Interactivo (Construí. Explorá. Creá.)</title>
+  <meta name="description" content="Prototipo interactivo oficial de Universo Rasti: experiencia híbrida físico-digital de construcción con bloques para niños de 4 a 10 años." />
+  <link rel="icon" type="image/png" href="assets/ui/isotipo-rasti.png" />
+
+  <!-- Tipografías Oficiales de Identidad Visual: FatFrank (Lilita One fallback), Fredoka y Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lilita+One&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- BARRA SUPERIOR EXTERNA DE DEMO (Para presentar en Cloudflare Pages) -->
+  <header class="demo-toolbar" aria-label="Controles del prototipo">
+    <div class="demo-toolbar-left">
+      <span class="demo-brand-dot"></span>
+      <span class="demo-title">UNIVERSO RASTI • PROTOTIPO INTERACTIVO</span>
+      <span class="demo-badge">Kit 400 Bloques + App</span>
+    </div>
+    <div class="demo-toolbar-controls">
+      <button type="button" class="demo-chip" onclick="RastiApp.openOnboarding(true)">
+        ✨ Crear Cuenta (Inicio)
+      </button>
+      <button type="button" class="demo-chip active" id="btn-age-7-10" onclick="RastiApp.setAgeGroup('7-10')">
+        🧒 7 a 10 años
+      </button>
+      <button type="button" class="demo-chip" id="btn-age-4-6" onclick="RastiApp.setAgeGroup('4-6')">
+        👶 4 a 6 años 🔊
+      </button>
+      <button type="button" class="demo-chip" onclick="RastiApp.openScannerModal('Cohete Explorador X-1', 'Estación Espacial', 'assets/builds/build-rocket.jpg', 15)">
+        📷 Probar Cámara Escáner
+      </button>
+      <button type="button" class="demo-chip" id="btn-toggle-fullscreen" onclick="RastiApp.toggleFullscreen()">
+        🖥️ Pantalla Completa
+      </button>
+    </div>
+  </header>
+
+  <!-- ESCENARIO PRINCIPAL EN FORMATO TABLET HORIZONTAL -->
+  <main class="app-stage-wrapper">
+    <div class="tablet-device" id="tablet-frame">
+      <div class="app-viewport">
+
+        <!-- NOTIFICACIÓN TOAST FLOTANTE -->
+        <div class="rasti-toast" id="rasti-toast" role="status" aria-live="polite">
+          <span id="toast-icon">⭐</span>
+          <span id="toast-message">¡Cambios guardados en tu avatar!</span>
+        </div>
+
+        <!-- ================================================================
+             SIMULADOR DE CREACIÓN DE CUENTA (ONBOARDING AL INICIAR)
+             ================================================================ -->
+        <div class="onboarding-overlay" id="onboarding-overlay" aria-label="Creación de cuenta">
+          <div class="onboarding-card">
+            <!-- Encabezado con Logo -->
+            <div class="onboarding-header">
+              <img src="assets/ui/logo-universo-rasti.png" alt="Universo Rasti" class="onboarding-logo" />
+              <div class="onboarding-steps-pills">
+                <span class="step-dot active" id="onb-dot-1">1. Tu Perfil</span>
+                <span class="step-dot" id="onb-dot-2">2. Adulto y Kit</span>
+                <span class="step-dot" id="onb-dot-3">3. Tu Avatar</span>
+              </div>
+            </div>
+
+            <!-- PASO 1: Nombre y Edad -->
+            <div class="onboarding-step active" id="onb-step-1">
+              <h2 class="onb-title">¡BIENVENIDO A UNIVERSO RASTI! 👋</h2>
+              <p class="onb-subtitle">Contanos cómo te llamás y cuántos años tenés para preparar tu aventura</p>
+
+              <div class="onb-form-group">
+                <label class="onb-label" for="onb-input-name">¿CÓMO TE LLAMÁS?</label>
+                <div class="onb-name-row">
+                  <input type="text" id="onb-input-name" class="onb-text-input" value="Leo" maxlength="18" placeholder="Escribí tu nombre..." oninput="RastiApp.updateOnboardingName(this.value)" />
+                  <div class="onb-safe-alias">
+                    <span>🔒 Alias seguro: <strong id="onb-alias-preview">@Lordlyburrito71</strong></span>
+                    <button type="button" class="onb-mini-btn" onclick="RastiApp.rollOnboardingAlias()" title="Cambiar alias">🎲</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="onb-form-group">
+                <label class="onb-label" for="onb-input-age">¿CUÁNTOS AÑOS TENÉS?</label>
+                <div class="onb-exact-age-wrap">
+                  <div class="onb-age-numbers-row" id="onb-age-numbers-row">
+                    <button type="button" class="onb-age-num-btn" data-age="4" onclick="RastiApp.selectExactAge(4)">4</button>
+                    <button type="button" class="onb-age-num-btn" data-age="5" onclick="RastiApp.selectExactAge(5)">5</button>
+                    <button type="button" class="onb-age-num-btn" data-age="6" onclick="RastiApp.selectExactAge(6)">6</button>
+                    <button type="button" class="onb-age-num-btn" data-age="7" onclick="RastiApp.selectExactAge(7)">7</button>
+                    <button type="button" class="onb-age-num-btn selected" data-age="8" onclick="RastiApp.selectExactAge(8)">8</button>
+                    <button type="button" class="onb-age-num-btn" data-age="9" onclick="RastiApp.selectExactAge(9)">9</button>
+                    <button type="button" class="onb-age-num-btn" data-age="10" onclick="RastiApp.selectExactAge(10)">10</button>
+                  </div>
+                  <div class="onb-age-input-box">
+                    <span>Edad:</span>
+                    <input type="number" id="onb-input-age" class="onb-age-number-input" min="3" max="14" value="8" oninput="RastiApp.selectExactAge(this.value)" />
+                    <span>años</span>
+                  </div>
+                </div>
+                <div class="onb-age-mode-hint" id="onb-age-mode-hint">
+                  🧒🚀 <strong>8 años:</strong> Desafíos de construcción + Comunidad Segura Familia Rasti habilitada
+                </div>
+              </div>
+
+              <div class="onb-footer">
+                <button type="button" class="btn-rasti btn-rasti-primary" onclick="RastiApp.goOnboardingStep(2)">
+                  SIGUIENTE PASO →
+                </button>
+              </div>
+            </div>
+
+            <!-- PASO 2: Control Parental y Kit QR -->
+            <div class="onboarding-step" id="onb-step-2">
+              <h2 class="onb-title">🛡️ ADULTO RESPONSABLE Y KIT RASTI</h2>
+              <p class="onb-subtitle">Configuración rápida de seguridad para que los chicos jueguen protegidos</p>
+
+              <div class="onb-parental-grid">
+                <div class="onb-parental-box">
+                  <div class="onb-parental-icon">👨‍👩‍👧‍👦</div>
+                  <div class="onb-parental-info">
+                    <h3>Supervisión y Comunidad Segura</h3>
+                    <p>Habilitar galería <strong>Familia Rasti (+6 años)</strong>: sin chat, sin datos personales, con filtro IA y moderador humano.</p>
+                  </div>
+                  <button type="button" class="onb-toggle-btn active" id="onb-parental-toggle" onclick="RastiApp.toggleOnboardingParental()">
+                    ✓ HABILITADO
+                  </button>
+                </div>
+
+                <div class="onb-parental-box">
+                  <div class="onb-parental-icon">
+                    <img src="assets/ui/isotipo-rasti.png" alt="Bloque" style="width:42px;height:42px;object-fit:contain;" />
+                  </div>
+                  <div class="onb-parental-info">
+                    <h3>Kit Físico de 400 Bloques Rasti</h3>
+                    <p>Código QR dentro de la caja verificado para desbloquear todos los mundos y el escáner.</p>
+                  </div>
+                  <span class="onb-qr-badge">📦 QR ACTIVO ✓</span>
+                </div>
+              </div>
+
+              <div class="onb-footer">
+                <button type="button" class="btn-rasti btn-rasti-white" onclick="RastiApp.goOnboardingStep(1)">
+                  ← ATRÁS
+                </button>
+                <button type="button" class="btn-rasti btn-rasti-primary" onclick="RastiApp.goOnboardingStep(3)">
+                  ELEGIR MI PERSONAJE →
+                </button>
+              </div>
+            </div>
+
+            <!-- PASO 3: Personalización Rápida del Personaje -->
+            <div class="onboarding-step" id="onb-step-3">
+              <h2 class="onb-title">🎨 ¡ELEGÍ TU AVATAR PROTAGONISTA!</h2>
+              <p class="onb-subtitle">Elegí quién te va a acompañar en todas las historias (después podés cambiarle toda la ropa)</p>
+
+              <div class="onb-avatar-picker-layout">
+                <div class="onb-avatar-big-preview">
+                  <img id="onb-preview-img" src="assets/avatars/avatar-1.png" alt="Avatar elegido" />
+                  <span id="onb-preview-name">Leo</span>
+                  <button type="button" class="onb-random-btn" onclick="RastiApp.randomizeAvatar();RastiApp.syncOnboardingPreview();">
+                    🎲 Sorpresa
+                  </button>
+                </div>
+
+                <div class="onb-avatars-grid" id="onb-avatars-grid">
+                  <!-- Renderizado con los 10 perfiles de Página 3 -->
+                </div>
+              </div>
+
+              <div class="onb-footer">
+                <button type="button" class="btn-rasti btn-rasti-white" onclick="RastiApp.goOnboardingStep(2)">
+                  ← ATRÁS
+                </button>
+                <button type="button" class="btn-rasti btn-rasti-yellow" onclick="RastiApp.finishOnboarding('personalizacion')">
+                  👕 PERSONALIZAR MÁS
+                </button>
+                <button type="button" class="btn-rasti btn-rasti-build" onclick="RastiApp.finishOnboarding('inicio')">
+                  🚀 ¡EMPEZAR A JUGAR!
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ================================================================
+             BARRA SUPERIOR PERMANENTE (TOP HUD BAR — PÁGINA 4 DEL PDF)
+             ================================================================ -->
+        <header class="top-hud">
+          <!-- Izquierda: Avatar + Nombre -->
+          <div class="hud-user-pill" onclick="RastiApp.navigate('personalizacion')" title="Personalizar mi avatar">
+            <div class="hud-avatar-ring">
+              <img id="hud-avatar-img" src="assets/avatars/avatar-1.png" alt="Avatar del usuario" />
+            </div>
+            <div class="hud-user-info">
+              <span class="hud-username" id="hud-username">Lordlyburrito71</span>
+              <span class="hud-user-sub" id="hud-user-sub">⭐ Nivel 4 • 7-10 años</span>
+            </div>
+          </div>
+
+          <!-- Centro: Logotipo Oficial UNIVERSO Rasti -->
+          <div class="hud-center-logo" onclick="RastiApp.navigate('inicio')" title="Ir a Inicio">
+            <img src="assets/ui/logo-universo-rasti.png" alt="Universo Rasti" />
+          </div>
+
+          <!-- Derecha: Estrellas 120 + Notificaciones + Configuración -->
+          <div class="hud-right-actions">
+            <div class="hud-stars-pill" onclick="RastiApp.navigate('logros')" title="Ver mis estrellas y logros">
+              <span class="hud-star-icon">⭐</span>
+              <span class="hud-stars-count" id="hud-stars-count">120</span>
+            </div>
+
+            <button type="button" class="hud-icon-btn" onclick="RastiApp.openNotificationsModal()" title="Notificaciones">
+              🔔
+              <span class="hud-notif-dot" id="hud-notif-dot"></span>
+            </button>
+
+            <button type="button" class="hud-icon-btn" onclick="RastiApp.openSettingsModal()" title="Configuración y Control Parental">
+              ⚙️
+            </button>
+          </div>
+        </header>
+
+        <!-- ================================================================
+             CONTENEDOR DE LAS 4 SECCIONES PRINCIPALES
+             ================================================================ -->
+        <div class="screens-container">
+
+          <!-- ==============================================================
+               1. SECCIÓN: INICIO (Limpia y Fiel a Página 4 Pantalla 1)
+               ============================================================== -->
+          <section id="screen-inicio" class="app-screen active" aria-label="Inicio">
+
+            <!-- Burbuja compacta de bienvenida con voz argentina -->
+            <div class="inicio-top-widgets">
+              <div class="welcome-speech-card">
+                <button type="button" class="welcome-Voice-btn" id="btn-voice-welcome" onclick="RastiApp.speakWelcome()" title="Escuchar bienvenida en voz argentina">
+                  🔊
+                </button>
+                <div class="welcome-text-block">
+                  <h2>¡Hola, <span id="inicio-welcome-name">Leo</span>! 👋</h2>
+                  <p id="inicio-welcome-msg">¡Elegí tu aventura para empezar a construir!</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Las 2 Grandes Tarjetas de Página 4 Pantalla 1 (MODO AVENTURA y FAMILIA RASTI) -->
+            <div class="inicio-hero-cards">
+              <div class="hero-portal-card" onclick="RastiApp.openModoAventuraFromInicio()">
+                <img class="portal-art" src="assets/ui/card-modo-aventura.png" alt="Modo Aventura" />
+                <div class="portal-card-overlay">
+                  <span class="portal-pill-tag">🏝️ 4 Mundos</span>
+                  <span class="portal-enter-cta">JUGAR →</span>
+                </div>
+              </div>
+
+              <div class="hero-portal-card familia-card" onclick="RastiApp.openFamiliaFromInicio()">
+                <img class="portal-art" src="assets/ui/card-familia-rasti.png" alt="Familia Rasti" />
+                <div class="portal-card-overlay">
+                  <span class="portal-pill-tag">❤️ Galería +6</span>
+                  <span class="portal-enter-cta">ENTRAR →</span>
+                </div>
+              </div>
+            </div>
+
+          </section>
+
+          <!-- ==============================================================
+               2. SECCIÓN: PERSONALIZACIÓN (Página 3 del PDF)
+               ============================================================== -->
+          <section id="screen-personalizacion" class="app-screen" aria-label="Personalización del Avatar">
+
+            <div class="custom-header-bar">
+              <div class="custom-header-left">
+                <button type="button" class="btn-circle-3d white" onclick="RastiApp.navigate('inicio')" title="Volver a Inicio">
+                  ←
+                </button>
+                <div class="personaliza-title-badge">
+                  <div class="personaliza-title-text">
+                    <span class="line-white">PERSONALIZÁ</span>
+                    <span class="line-yellow">TU AVATAR</span>
+                  </div>
+                  <img class="personaliza-title-brick" src="assets/ui/isotipo-rasti.png" alt="Bloque Rasti" />
+                </div>
+              </div>
+
+              <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.85);padding:4px 8px;border-radius:999px;border:2px solid #bae6fd;">
+                <button type="button" class="demo-chip active" id="btn-gender-boy" style="color:var(--rasti-navy);" onclick="RastiApp.setCharacterGender('boy')">
+                  👦 Modelo Leo
+                </button>
+                <button type="button" class="demo-chip" id="btn-gender-girl" style="color:var(--rasti-navy);" onclick="RastiApp.setCharacterGender('girl')">
+                  👧 Modelo Sofi
+                </button>
+              </div>
+
+              <button type="button" class="btn-rasti btn-rasti-build" onclick="RastiApp.saveAvatarCustomization()">
+                GUARDAR ✓
+              </button>
+            </div>
+
+            <div class="custom-main-grid">
+              <div class="character-stage-card" id="character-stage-card">
+                <img id="stage-character-img" class="stage-bg-image" src="assets/custom/boy-full.png" alt="Vista previa del avatar" />
+                <div class="stage-equipped-pills" id="stage-equipped-pills"></div>
+                <div class="stage-live-preview-box" id="stage-live-preview-box"></div>
+
+                <div class="stage-side-controls">
+                  <button type="button" class="stage-ctrl-btn" onclick="RastiApp.toggleCharacterFlip()" title="Girar personaje">↺</button>
+                  <button type="button" class="stage-ctrl-btn" onclick="RastiApp.toggleCharacterZoom()" title="Acercar / Alejar">🔍</button>
+                </div>
+
+                <button type="button" class="btn-sorpresa" onclick="RastiApp.randomizeAvatar()">
+                  <span>🎲</span>
+                  <span>SORPRESA</span>
+                </button>
+              </div>
+
+              <div class="custom-options-panel">
+                <div class="custom-category-tabs" role="tablist">
+                  <button type="button" class="cat-tab-btn active" data-cat="all" onclick="RastiApp.filterCustomCategory('all')">
+                    <span class="cat-icon">👦</span>
+                    <span>APARIENCIA</span>
+                  </button>
+                  <button type="button" class="cat-tab-btn" data-cat="peinados" onclick="RastiApp.filterCustomCategory('peinados')">
+                    <span class="cat-icon">💇</span>
+                    <span>PEINADOS</span>
+                  </button>
+                  <button type="button" class="cat-tab-btn" data-cat="ropa" onclick="RastiApp.filterCustomCategory('ropa')">
+                    <span class="cat-icon">👕</span>
+                    <span>ROPA</span>
+                  </button>
+                  <button type="button" class="cat-tab-btn" data-cat="trajes" onclick="RastiApp.filterCustomCategory('trajes')">
+                    <span class="cat-icon">🧑‍🚀</span>
+                    <span>TRAJES</span>
+                  </button>
+                  <button type="button" class="cat-tab-btn" data-cat="accesorios" onclick="RastiApp.filterCustomCategory('accesorios')">
+                    <span class="cat-icon">🎒</span>
+                    <span>ACCESORIOS</span>
+                  </button>
+                </div>
+
+                <div class="custom-section-box" data-section="apariencia">
+                  <div class="custom-box-label">
+                    <span>PERSONAJE BASE</span>
+                    <span style="color:var(--rasti-blue);font-size:0.68rem;">10 protagonistas</span>
+                  </div>
+                  <div class="base-profiles-row" id="custom-profiles-row"></div>
+                </div>
+
+                <div class="custom-row-split" data-section="apariencia">
+                  <div class="custom-section-box">
+                    <div class="custom-box-label">
+                      <span>COLOR DE PIEL</span>
+                      <span id="label-skin-name" style="color:var(--rasti-blue);font-size:0.68rem;">Trigueño Suave</span>
+                    </div>
+                    <div class="swatch-row" id="custom-skin-row"></div>
+                  </div>
+                  <div class="custom-section-box">
+                    <div class="custom-box-label">
+                      <span>COLOR DE OJOS</span>
+                      <span id="label-eye-name" style="color:var(--rasti-blue);font-size:0.68rem;">Castaño</span>
+                    </div>
+                    <div class="swatch-row" id="custom-eyes-row"></div>
+                  </div>
+                </div>
+
+                <div class="custom-section-box" data-section="peinados">
+                  <div class="custom-box-label">
+                    <span>PEINADOS Y COLOR DE PELO</span>
+                    <span id="label-hair-name" style="color:var(--rasti-blue);font-size:0.68rem;">Rulos Aventureros</span>
+                  </div>
+                  <div class="hairstyles-grid" id="custom-hairstyles-grid"></div>
+                  <div class="custom-box-sublabel" style="margin-top:5px;">COLOR DE PELO</div>
+                  <div class="swatch-row" id="custom-haircolor-row"></div>
+                </div>
+
+                <div class="custom-bottom-split">
+                  <div class="custom-section-box" data-section="ropa">
+                    <div class="custom-box-label">
+                      <span>ROPA</span>
+                      <span id="label-clothes-name" style="color:var(--rasti-blue);font-size:0.68rem;">Chaleco + Cargo</span>
+                    </div>
+                    <div class="custom-box-sublabel">PARTE DE ARRIBA</div>
+                    <div class="clothes-grid" id="custom-tops-grid"></div>
+                    <div class="custom-box-sublabel" style="margin-top:4px;">PARTE DE ABAJO</div>
+                    <div class="clothes-grid" id="custom-bottoms-grid"></div>
+                  </div>
+
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <div class="custom-section-box" data-section="trajes">
+                      <div class="custom-box-label"><span>TRAJES ESPECIALES</span></div>
+                      <div class="suits-grid" id="custom-suits-grid"></div>
+                    </div>
+
+                    <div class="custom-section-box" data-section="accesorios">
+                      <div class="custom-box-label"><span>ACCESORIOS Y MOCHILAS</span></div>
+                      <div class="accessories-grid" id="custom-accessories-grid"></div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </section>
+
+          <!-- ==============================================================
+               3. SECCIÓN: MODOS (Solo Modo Aventura y Familia Rasti)
+               ============================================================== -->
+          <section id="screen-modos" class="app-screen" aria-label="Modos de Juego">
+
+            <!-- Selector simple y limpio arriba: Modo Aventura vs Familia Rasti -->
+            <div class="modos-compact-switcher-wrap">
+              <div class="modos-view-switcher" role="tablist">
+                <button type="button" class="modos-switch-btn active" id="tab-modos-islands" onclick="RastiApp.switchModosView('islands')">
+                  🏝️ MODO AVENTURA
+                </button>
+                <button type="button" class="modos-switch-btn" id="tab-modos-familia" onclick="RastiApp.switchModosView('familia')">
+                  ❤️ FAMILIA RASTI
+                </button>
+              </div>
+            </div>
+
+            <!-- SUB-VISTA 1: Mapa de las 4 Islas Flotantes de Modo Aventura (Página 4 Pantalla 2) -->
+            <div id="modos-view-islands" class="floating-islands-map">
+              <!-- Renderizado dinámicamente desde RASTI_DATA.worlds -->
+            </div>
+
+            <!-- SUB-VISTA 2: Comunidad Segura FAMILIA RASTI (Página 4 Pantalla 3) -->
+            <div id="modos-view-familia" class="familia-subview" style="display:none;">
+              <div class="familia-top-bar">
+                <div class="familia-nav-pills" id="familia-subtabs">
+                  <button type="button" class="familia-tab-btn active" data-ftab="todos" onclick="RastiApp.filterFamiliaTab('todos')">Galería</button>
+                  <button type="button" class="familia-tab-btn" data-ftab="amigos" onclick="RastiApp.filterFamiliaTab('amigos')">Amigos</button>
+                  <button type="button" class="familia-tab-btn" data-ftab="desafíos" onclick="RastiApp.filterFamiliaTab('desafíos')">Desafíos</button>
+                  <button type="button" class="familia-tab-btn" data-ftab="noticias" onclick="RastiApp.filterFamiliaTab('noticias')">Noticias</button>
+                </div>
+
+                <button type="button" class="btn-rasti btn-rasti-yellow" style="padding:7px 16px;font-size:0.84rem;" onclick="RastiApp.openShareCreationModal()">
+                  📷 Compartí tu creación
+                </button>
+              </div>
+
+              <div class="familia-gallery-grid" id="familia-gallery-grid">
+                <!-- Renderizado dinámicamente desde RASTI_DATA.familiaGallery -->
+              </div>
+            </div>
+
+          </section>
+
+          <!-- ==============================================================
+               4. SECCIÓN: LOGROS (Súper Visual, Reducida e Intuitiva para Niños)
+               ============================================================== -->
+          <section id="screen-logros" class="app-screen" aria-label="Logros y Recompensas">
+
+            <!-- Fila Superior Visual: Nivel + 3 Contadores Gigantes + Botón Cofre Premio -->
+            <div class="kid-logros-top">
+              <div class="kid-level-card">
+                <div class="trophy-ring-badge">
+                  <img src="assets/ui/nav-logros.png" alt="Trofeo" />
+                </div>
+                <div class="kid-level-info">
+                  <span class="kid-level-badge">NIVEL 4</span>
+                  <div class="overall-bar-track" style="height:16px;margin-top:6px;">
+                    <div class="overall-bar-fill" id="logros-overall-bar" style="width: 75%;"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="kid-kpi-pill">
+                <span class="kid-kpi-emoji">⭐</span>
+                <div>
+                  <div class="kid-kpi-num" id="kpi-stars">120</div>
+                  <div class="kid-kpi-lbl">Estrellas</div>
+                </div>
+              </div>
+
+              <div class="kid-kpi-pill">
+                <span class="kid-kpi-emoji">🏅</span>
+                <div>
+                  <div class="kid-kpi-num" id="kpi-medals">6/8</div>
+                  <div class="kid-kpi-lbl">Medallas</div>
+                </div>
+              </div>
+
+              <div class="kid-kpi-pill">
+                <span class="kid-kpi-emoji">🧱</span>
+                <div>
+                  <div class="kid-kpi-num" id="kpi-builds">6</div>
+                  <div class="kid-kpi-lbl">Creaciones</div>
+                </div>
+              </div>
+
+              <button type="button" class="btn-rasti btn-rasti-yellow kid-reward-chest-btn" id="btn-claim-daily" onclick="RastiApp.claimChallengeReward(1)">
+                <span style="font-size:1.5rem;">🎁</span>
+                <span>¡PREMIO +15 ⭐!</span>
+              </button>
+            </div>
+
+            <!-- Mis Medallas (Íconos Grandes, Casi Sin Texto) -->
+            <div class="kid-logros-box">
+              <h3 class="kid-box-title">🏅 MIS MEDALLAS</h3>
+              <div class="kid-medals-row" id="logros-medals-grid"></div>
+            </div>
+
+            <!-- Mis Construcciones Escaneadas (Fotos Grandes + Botón Cámara) -->
+            <div class="kid-logros-box">
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <h3 class="kid-box-title">📷 MIS CONSTRUCCIONES RASTI</h3>
+                <button type="button" class="btn-rasti btn-rasti-build" style="padding:7px 16px;font-size:0.82rem;" onclick="RastiApp.openScannerModal('Mi Construcción Rasti', 'Modo Aventura', 'assets/builds/build-rocket.jpg', 15)">
+                  📷 ESCANEAR NUEVA
+                </button>
+              </div>
+              <div class="completed-builds-strip" id="logros-builds-strip"></div>
+            </div>
+
+          </section>
+
+        </div>
+
+        <!-- ================================================================
+             BARRA DE NAVEGACIÓN INFERIOR PERMANENTE (4 PESTAÑAS EXCLUSIVAS)
+             ================================================================ -->
+        <div class="bottom-nav-wrap">
+          <nav class="bottom-nav" aria-label="Navegación principal">
+            <button type="button" class="nav-tab active" data-target="inicio" onclick="RastiApp.navigate('inicio')">
+              <img class="nav-tab-icon" src="assets/ui/nav-inicio.png" alt="Inicio" />
+              <span class="nav-tab-label">Inicio</span>
+            </button>
+
+            <button type="button" class="nav-tab" data-target="personalizacion" onclick="RastiApp.navigate('personalizacion')">
+              <img class="nav-tab-icon" src="assets/ui/nav-personalizacion.png" alt="Personalización" />
+              <span class="nav-tab-label">Personalización</span>
+            </button>
+
+            <button type="button" class="nav-tab" data-target="modos" onclick="RastiApp.navigate('modos')">
+              <img class="nav-tab-icon" src="assets/ui/nav-modos.png" alt="Modos" />
+              <span class="nav-tab-label">Modos</span>
+            </button>
+
+            <button type="button" class="nav-tab" data-target="logros" onclick="RastiApp.navigate('logros')">
+              <span class="nav-tab-badge" id="nav-logros-badge">1</span>
+              <img class="nav-tab-icon" src="assets/ui/nav-logros.png" alt="Logros" />
+              <span class="nav-tab-label">Logros</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- ================================================================
+             MODAL UNIVERSAL DINÁMICO (Mapa de Niveles, Cámara Webcam, Familia)
+             ================================================================ -->
+        <div class="modal-backdrop" id="rasti-modal-backdrop" onclick="RastiApp.closeModalOnBackdrop(event)">
+          <div class="modal-dialog" role="dialog" aria-modal="true" id="rasti-modal-dialog">
+            <button type="button" class="btn-circle-3d red modal-close-btn" onclick="RastiApp.closeModal()" title="Cerrar">
+              ✕
+            </button>
+            <div id="rasti-modal-content"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
