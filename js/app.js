@@ -152,9 +152,8 @@ const RastiApp = (() => {
     const u = RASTI_DATA.user;
     grid.innerHTML = RASTI_DATA.profiles.map(p => `
       <button type="button" class="onb-avatar-choice ${u.avatarId === p.id ? 'selected' : ''}"
-              onclick="RastiApp.selectOnboardingAvatar(${p.id})">
-        <img src="${p.img}" alt="${p.name}" />
-        <span>${p.name}</span>
+              onclick="RastiApp.selectOnboardingAvatar(${p.id})" aria-label="Elegir protagonista">
+        <img src="${p.fullImg || p.img}" alt="Protagonista" />
       </button>
     `).join('');
     syncOnboardingPreview();
@@ -164,9 +163,7 @@ const RastiApp = (() => {
     const u = RASTI_DATA.user;
     const p = RASTI_DATA.profiles.find(item => item.id === u.avatarId) || RASTI_DATA.profiles[0];
     const imgEl = document.getElementById('onb-preview-img');
-    const nameEl = document.getElementById('onb-preview-name');
-    if (imgEl) imgEl.src = p.img;
-    if (nameEl) nameEl.textContent = u.displayName || p.name;
+    if (imgEl) imgEl.src = p.fullImg || p.img;
   }
 
   function openOnboarding(force = false) {
@@ -300,8 +297,6 @@ const RastiApp = (() => {
 
   function selectOnboardingAvatar(profileId) {
     selectBaseProfile(profileId);
-    const input = document.getElementById('onb-input-name');
-    if (input) input.value = RASTI_DATA.user.displayName;
     renderOnboardingAvatars();
   }
 
@@ -313,7 +308,7 @@ const RastiApp = (() => {
     document.getElementById('onboarding-overlay')?.classList.remove('open');
     updateTopHud();
     navigate(targetTab);
-    showToast(`¡Bienvenido/a ${RASTI_DATA.user.displayName} a Universo Rasti!`, '🚀');
+    showToast(`¡Bienvenido/a @${RASTI_DATA.user.username} a Universo Rasti!`, '🚀');
   }
 
   // ==========================================================================
@@ -426,116 +421,68 @@ const RastiApp = (() => {
   }
 
   // ==========================================================================
-  // SECCIÓN 2: PERSONALIZACIÓN DEL AVATAR (PÁGINA 3 DEL PDF)
+  // SECCIÓN 2: PERSONALIZACIÓN DEL AVATAR (ELEMENTOS ADJUNTOS)
   // ==========================================================================
   function renderPersonalizacion() {
     const u = RASTI_DATA.user;
     const c = RASTI_DATA.customization;
     const gender = u.gender;
 
+    // 1. Mostrar únicamente los niños en ♂ y únicamente las niñas en ♀, sin nombres y más grandes
     const profilesRow = document.getElementById('custom-profiles-row');
     if (profilesRow) {
-      profilesRow.innerHTML = RASTI_DATA.profiles.map(p => `
-        <button type="button" class="base-profile-btn ${u.avatarId === p.id ? 'selected' : ''}"
-                onclick="RastiApp.selectBaseProfile(${p.id})">
-          <img src="${p.img}" alt="${p.name}" />
-          <span>${p.name}</span>
+      const genderProfiles = RASTI_DATA.profiles.filter(p => p.gender === gender);
+      profilesRow.innerHTML = genderProfiles.map(p => `
+        <button type="button" class="base-profile-btn large-char-card ${u.avatarId === p.id ? 'selected' : ''}"
+                onclick="RastiApp.selectBaseProfile(${p.id})" aria-label="Elegir personaje">
+          <img src="${p.fullImg || p.img}" alt="Personaje" />
         </button>
       `).join('');
     }
 
-    const skinRow = document.getElementById('custom-skin-row');
-    if (skinRow) {
-      skinRow.innerHTML = c.skinTones.map(s => `
-        <button type="button" class="color-swatch-btn ${u.skinTone === s.id ? 'selected' : ''}"
-                style="background:${s.hex};"
-                title="${s.name}"
-                onclick="RastiApp.selectCustomOption('skinTone', ${s.id})"></button>
-      `).join('');
-    }
-
-    const eyesRow = document.getElementById('custom-eyes-row');
-    if (eyesRow) {
-      eyesRow.innerHTML = c.eyeColors.map(e => `
-        <button type="button" class="eye-swatch-btn ${u.eyeColor === e.id ? 'selected' : ''}"
-                style="background:radial-gradient(circle, ${e.ring} 35%, ${e.hex} 100%);"
-                title="${e.name}"
-                onclick="RastiApp.selectCustomOption('eyeColor', ${e.id})"></button>
-      `).join('');
-    }
-
-    const hairGrid = document.getElementById('custom-hairstyles-grid');
-    if (hairGrid) {
-      const list = c.hairStyles[gender];
-      hairGrid.innerHTML = list.map(h => `
-        <button type="button" class="item-thumb-btn ${u.hairStyle === h.id ? 'selected' : ''}"
-                title="${h.name}"
-                onclick="RastiApp.selectCustomOption('hairStyle', ${h.id})">
-          <img src="${h.img}" alt="${h.name}" />
-        </button>
-      `).join('');
-    }
-
-    const hairColorRow = document.getElementById('custom-haircolor-row');
-    if (hairColorRow) {
-      hairColorRow.innerHTML = c.hairColors.map(hc => `
-        <button type="button" class="color-swatch-btn ${u.hairColor === hc.id ? 'selected' : ''}"
-                style="background:${hc.hex};"
-                title="${hc.name}"
-                onclick="RastiApp.selectCustomOption('hairColor', ${hc.id})"></button>
-      `).join('');
-    }
-
+    // 2. Ropa de arriba (Hombre en ♂, Mujer en ♀)
     const topsGrid = document.getElementById('custom-tops-grid');
     if (topsGrid) {
-      topsGrid.innerHTML = c.tops[gender].map(t => `
+      topsGrid.innerHTML = (c.tops[gender] || []).map(t => `
         <button type="button" class="item-thumb-btn ${u.topItem === t.id && !u.specialSuit ? 'selected' : ''}"
-                title="${t.name}"
                 onclick="RastiApp.selectClothingItem('topItem', ${t.id})">
-          <img src="${t.img}" alt="${t.name}" />
+          <img src="${t.img}" alt="Prenda superior" />
         </button>
       `).join('');
     }
 
+    // 3. Ropa de abajo (Hombre en ♂, Mujer en ♀)
     const bottomsGrid = document.getElementById('custom-bottoms-grid');
     if (bottomsGrid) {
-      bottomsGrid.innerHTML = c.bottoms[gender].map(b => `
+      bottomsGrid.innerHTML = (c.bottoms[gender] || []).map(b => `
         <button type="button" class="item-thumb-btn ${u.bottomItem === b.id && !u.specialSuit ? 'selected' : ''}"
-                title="${b.name}"
                 onclick="RastiApp.selectClothingItem('bottomItem', ${b.id})">
-          <img src="${b.img}" alt="${b.name}" />
+          <img src="${b.img}" alt="Prenda inferior" />
         </button>
       `).join('');
     }
 
+    // 4. Trajes Especiales según género (♂ o ♀)
     const suitsGrid = document.getElementById('custom-suits-grid');
     if (suitsGrid) {
-      suitsGrid.innerHTML = c.specialSuits.map(s => `
+      const suitList = Array.isArray(c.specialSuits) ? c.specialSuits : (c.specialSuits[gender] || []);
+      suitsGrid.innerHTML = suitList.map(s => `
         <button type="button" class="item-thumb-btn ${u.specialSuit === s.id ? 'selected' : ''}"
-                title="${s.name}"
                 onclick="RastiApp.selectSpecialSuit(${s.id})">
-          <img src="${s.img}" alt="${s.name}" />
+          <img src="${s.img}" alt="Traje especial" />
         </button>
       `).join('');
     }
 
+    // 5. Accesorios (6 accesorios de accesorios.png)
     const accGrid = document.getElementById('custom-accessories-grid');
     if (accGrid) {
-      const combined = [
-        ...c.accessories.slice(0, 4),
-        c.backpacks[0],
-        c.accessories[4]
-      ];
-      accGrid.innerHTML = combined.map(a => {
-        const isSel = (a.id === 5 && u.backpack === 5) || (a.id !== 5 && u.accessory === a.id);
-        return `
-          <button type="button" class="item-thumb-btn ${isSel ? 'selected' : ''}"
-                  title="${a.name}"
-                  onclick="RastiApp.selectAccessoryItem(${a.id})">
-            <img src="${a.img}" alt="${a.name}" />
-          </button>
-        `;
-      }).join('');
+      accGrid.innerHTML = (c.accessories || []).map(a => `
+        <button type="button" class="item-thumb-btn ${u.accessory === a.id ? 'selected' : ''}"
+                onclick="RastiApp.selectAccessoryItem(${a.id})">
+          <img src="${a.img}" alt="Accesorio" />
+        </button>
+      `).join('');
     }
 
     updateCharacterStagePreview();
@@ -548,63 +495,31 @@ const RastiApp = (() => {
 
     const stageImg = document.getElementById('stage-character-img');
     if (stageImg) {
-      stageImg.src = gender === 'girl' ? 'assets/custom/girl-full.png' : 'assets/custom/boy-full.png';
-      const skinObj = c.skinTones.find(s => s.id === u.skinTone) || c.skinTones[1];
-      stageImg.style.filter = skinObj.filter;
-    }
+      const suitList = Array.isArray(c.specialSuits) ? c.specialSuits : (c.specialSuits[gender] || []);
+      const suitObj = u.specialSuit ? suitList.find(s => s.id === u.specialSuit) : null;
+      const profileObj = RASTI_DATA.profiles.find(p => p.id === u.avatarId) ||
+                         RASTI_DATA.profiles.find(p => p.gender === gender) ||
+                         RASTI_DATA.profiles[0];
 
-    const skinObj = c.skinTones.find(s => s.id === u.skinTone) || c.skinTones[1];
-    const eyeObj = c.eyeColors.find(e => e.id === u.eyeColor) || c.eyeColors[0];
-    const hairObj = c.hairStyles[gender].find(h => h.id === u.hairStyle) || c.hairStyles[gender][0];
-    const hairColObj = c.hairColors.find(hc => hc.id === u.hairColor) || c.hairColors[0];
-    const topObj = c.tops[gender].find(t => t.id === u.topItem) || c.tops[gender][0];
-    const botObj = c.bottoms[gender].find(b => b.id === u.bottomItem) || c.bottoms[gender][0];
-    const suitObj = u.specialSuit ? c.specialSuits.find(s => s.id === u.specialSuit) : null;
-    const accObj = c.accessories.find(a => a.id === u.accessory) || c.accessories[0];
-    const profileObj = RASTI_DATA.profiles.find(p => p.id === u.avatarId) || RASTI_DATA.profiles[0];
-
-    const lblSkin = document.getElementById('label-skin-name');
-    const lblEye = document.getElementById('label-eye-name');
-    const lblHair = document.getElementById('label-hair-name');
-    const lblClothes = document.getElementById('label-clothes-name');
-    if (lblSkin) lblSkin.textContent = skinObj.name;
-    if (lblEye) lblEye.textContent = eyeObj.name;
-    if (lblHair) lblHair.textContent = `${hairObj.name}`;
-    if (lblClothes) lblClothes.textContent = suitObj ? suitObj.name : `${topObj.name}`;
-
-    const pillsEl = document.getElementById('stage-equipped-pills');
-    if (pillsEl) {
-      pillsEl.innerHTML = `
-        <span class="equipped-badge">
-          <img src="${profileObj.img}" alt="" style="width:16px;height:16px;border-radius:50%;" />
-          ${u.displayName || profileObj.name}
-        </span>
-        <span class="equipped-badge">
-          <span class="color-dot" style="background:${skinObj.hex};"></span>
-          Piel
-        </span>
-        <span class="equipped-badge">
-          <span class="color-dot" style="background:${hairColObj.hex};"></span>
-          ${hairObj.name}
-        </span>
-      `;
-    }
-
-    const liveBox = document.getElementById('stage-live-preview-box');
-    if (liveBox) {
-      liveBox.innerHTML = `
-        <img class="stage-live-thumb" src="${hairObj.img}" alt="Peinado" />
-        <img class="stage-live-thumb" src="${suitObj ? suitObj.img : topObj.img}" alt="Prenda" />
-        ${!suitObj ? `<img class="stage-live-thumb" src="${botObj.img}" alt="Pantalón" />` : ''}
-        <img class="stage-live-thumb" src="${accObj.img}" alt="Accesorio" />
-      `;
+      if (suitObj) {
+        stageImg.src = suitObj.img;
+      } else {
+        stageImg.src = profileObj.fullImg || (gender === 'girl' ? 'assets/custom/girl-full.png' : 'assets/custom/boy-full.png');
+      }
+      stageImg.style.filter = 'none';
     }
   }
 
   function setCharacterGender(gender) {
     playTone('pop');
     RASTI_DATA.user.gender = gender;
-    RASTI_DATA.user.avatarId = gender === 'girl' ? 2 : 1;
+    const currentProfile = RASTI_DATA.profiles.find(p => p.id === RASTI_DATA.user.avatarId);
+    if (!currentProfile || currentProfile.gender !== gender) {
+      const firstMatch = RASTI_DATA.profiles.find(p => p.gender === gender);
+      if (firstMatch) RASTI_DATA.user.avatarId = firstMatch.id;
+    }
+    RASTI_DATA.user.topItem = 1;
+    RASTI_DATA.user.bottomItem = 1;
     document.getElementById('btn-gender-boy')?.classList.toggle('active', gender === 'boy');
     document.getElementById('btn-gender-girl')?.classList.toggle('active', gender === 'girl');
     renderPersonalizacion();
@@ -616,10 +531,8 @@ const RastiApp = (() => {
     const p = RASTI_DATA.profiles.find(item => item.id === profileId);
     if (!p) return;
     RASTI_DATA.user.avatarId = p.id;
-    RASTI_DATA.user.displayName = p.name;
     RASTI_DATA.user.gender = p.gender;
-    const hairMap = { 1: 1, 2: 1, 3: 8, 4: 4, 5: 2, 6: 7, 7: 6, 8: 6, 9: 4, 10: 3 };
-    if (hairMap[p.id]) RASTI_DATA.user.hairStyle = hairMap[p.id];
+    RASTI_DATA.user.specialSuit = null;
     document.getElementById('btn-gender-boy')?.classList.toggle('active', p.gender === 'boy');
     document.getElementById('btn-gender-girl')?.classList.toggle('active', p.gender === 'girl');
     renderPersonalizacion();
@@ -633,74 +546,23 @@ const RastiApp = (() => {
   }
 
   function selectClothingItem(type, id) {
-    const u = RASTI_DATA.user;
-    const list = type === 'topItem' ? RASTI_DATA.customization.tops[u.gender] : RASTI_DATA.customization.bottoms[u.gender];
-    const item = list.find(i => i.id === id);
-    if (!item) return;
-
-    if (item.locked) {
-      if (u.stars >= (item.cost || 10)) {
-        u.stars -= (item.cost || 10);
-        item.locked = false;
-        u[type] = id;
-        u.specialSuit = null;
-        playTone('success');
-        updateTopHud();
-        renderPersonalizacion();
-        showToast(`¡Desbloqueaste "${item.name}"!`, '🔓');
-      } else {
-        showToast(`Necesitás ${item.cost} ⭐`, '🔒');
-      }
-      return;
-    }
-
     playTone('pop');
+    const u = RASTI_DATA.user;
     u[type] = id;
     u.specialSuit = null;
     renderPersonalizacion();
   }
 
   function selectSpecialSuit(id) {
-    const u = RASTI_DATA.user;
-    const suit = RASTI_DATA.customization.specialSuits.find(s => s.id === id);
-    if (!suit) return;
-
-    if (suit.locked) {
-      if (u.stars >= (suit.cost || 25)) {
-        u.stars -= (suit.cost || 25);
-        suit.locked = false;
-        u.specialSuit = id;
-        playTone('success');
-        updateTopHud();
-        renderPersonalizacion();
-        showToast(`¡Desbloqueaste ${suit.name}!`, '🧑‍🚀');
-      } else {
-        showToast(`Necesitás ${suit.cost} ⭐`, '🔒');
-      }
-      return;
-    }
-
     playTone('pop');
+    const u = RASTI_DATA.user;
     u.specialSuit = u.specialSuit === id ? null : id;
     renderPersonalizacion();
   }
 
   function selectAccessoryItem(id) {
     playTone('pop');
-    if (id === 5) {
-      RASTI_DATA.user.backpack = 5;
-    } else {
-      const acc = RASTI_DATA.customization.accessories.find(a => a.id === id);
-      if (acc && acc.locked && RASTI_DATA.user.stars >= (acc.cost || 10)) {
-        RASTI_DATA.user.stars -= (acc.cost || 10);
-        acc.locked = false;
-        RASTI_DATA.user.accessory = id;
-        playTone('success');
-        updateTopHud();
-      } else if (acc && !acc.locked) {
-        RASTI_DATA.user.accessory = id;
-      }
-    }
+    RASTI_DATA.user.accessory = RASTI_DATA.user.accessory === id ? null : id;
     renderPersonalizacion();
   }
 
@@ -735,18 +597,17 @@ const RastiApp = (() => {
     playTone('success');
     const u = RASTI_DATA.user;
     const rand = (max) => Math.floor(Math.random() * max) + 1;
-    const randomProfile = RASTI_DATA.profiles[Math.floor(Math.random() * RASTI_DATA.profiles.length)];
+    const genderProfiles = RASTI_DATA.profiles.filter(p => p.gender === u.gender);
+    const pool = genderProfiles.length > 0 ? genderProfiles : RASTI_DATA.profiles;
+    const randomProfile = pool[Math.floor(Math.random() * pool.length)];
     u.avatarId = randomProfile.id;
-    u.displayName = randomProfile.name;
     u.gender = randomProfile.gender;
-    u.skinTone = rand(5);
-    u.eyeColor = rand(5);
-    u.hairStyle = rand(8);
-    u.hairColor = rand(7);
-    u.topItem = rand(5);
-    u.bottomItem = rand(5);
+    const maxTops = (RASTI_DATA.customization.tops[u.gender] || []).length || 7;
+    const maxBots = (RASTI_DATA.customization.bottoms[u.gender] || []).length || 7;
+    u.topItem = rand(maxTops);
+    u.bottomItem = rand(maxBots);
     u.specialSuit = null;
-    u.accessory = [1, 4][Math.floor(Math.random() * 2)];
+    u.accessory = rand(6);
 
     document.getElementById('btn-gender-boy')?.classList.toggle('active', u.gender === 'boy');
     document.getElementById('btn-gender-girl')?.classList.toggle('active', u.gender === 'girl');
@@ -988,8 +849,8 @@ const RastiApp = (() => {
     }
   }
 
-  // Mapa Visual de Niveles para cada Aventura (Sin exceso de texto)
-  function openWorldModal(worldId, selectedNum = null) {
+  // Mapa Visual de Niveles para cada Aventura + Presentación de Reino Perdido y Nivel 1
+  function openWorldModal(worldId, selectedNum = null, showIntroStep = null) {
     playTone('pop');
     const w = RASTI_DATA.worlds.find(item => item.id === worldId);
     if (!w) return;
@@ -1002,9 +863,58 @@ const RastiApp = (() => {
     const chosenMission = w.missions.find(m => m.num === activeNum) || currentMission;
     const profile = RASTI_DATA.profiles.find(p => p.id === RASTI_DATA.user.avatarId) || RASTI_DATA.profiles[0];
 
-    if (chosenMission.status === 'locked') {
-      showToast('🔒 Debes completar el nivel 1 de Reino Perdido para avanzar', '🏰');
+    // Si es Reino Perdido y se abre por primera vez desde la isla (selectedNum === null y showIntroStep !== false),
+    // primero presentar el mundo con la descripción solicitada y narrarla con voz femenina
+    const shouldPresentIntroFirst = (w.id === 'reino' && selectedNum === null && showIntroStep !== false);
+
+    if (shouldPresentIntroFirst) {
+      const introText = w.worldIntro || w.storyText7to10;
+      const introHtml = `
+        <div class="visual-world-header" style="background:${w.bgGradient};">
+          <div class="visual-world-title-group">
+            <img src="${w.badgeImg}" alt="${w.name}" />
+            <div>
+              <h2 style="font-family:var(--font-title);font-size:1.65rem;color:var(--rasti-yellow);line-height:1.05;">
+                ${w.name.toUpperCase()}
+              </h2>
+              <div style="font-family:var(--font-btn);font-weight:700;font-size:0.86rem;margin-top:3px;">
+                🏰 Presentación del Mundo • Nivel ${w.completedMissions}/${w.totalMissions}
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-right:42px;">
+            <button type="button" class="btn-rasti btn-rasti-yellow" style="padding:8px 14px;font-size:0.82rem;" onclick="RastiApp.speakWorldStory('${w.id}')">
+              🔊 ESCUCHAR HISTORIA
+            </button>
+          </div>
+        </div>
+
+        <div style="background:#ffffff;border:3px solid #bae6fd;border-radius:22px;padding:18px 22px;margin-bottom:14px;box-shadow:0 8px 20px rgba(0,36,107,0.12);">
+          <p style="font-family:var(--font-btn);font-size:1rem;line-height:1.55;color:var(--rasti-navy);font-weight:600;">
+            "${introText}"
+          </p>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;gap:12px;">
+          <button type="button" class="btn-rasti btn-rasti-build" style="padding:12px 26px;font-size:1.02rem;"
+                  onclick="RastiApp.openWorldModal('reino', 1, false)">
+            🏰 IR AL MAPA Y NIVEL 1: CONSTRUIR UN PUENTE →
+          </button>
+        </div>
+      `;
+      openModal(introHtml);
+      playArgentineVoice('reino_intro.mp3', introText);
+      return;
     }
+
+    if (chosenMission.status === 'locked') {
+      showToast('🔒 Debe completar el mundo "Reino Perdido" para desbloquear este nivel', '🏰');
+    } else if (w.id === 'reino' && chosenMission.num === 1 && chosenMission.audioFile) {
+      playArgentineVoice(chosenMission.audioFile, chosenMission.desc);
+    }
+
+    const previewImg = chosenMission.sceneImg || w.buildPreview;
 
     const html = `
       <!-- Encabezado Visual de la Aventura (Sin botón de Película) -->
@@ -1012,25 +922,31 @@ const RastiApp = (() => {
         <div class="visual-world-title-group">
           <img src="${w.badgeImg}" alt="${w.name}" />
           <div>
-            <h2 style="font-family:var(--font-title);font-size:1.65rem;color:var(--rasti-yellow);line-height:1.05;">
+            <h2 style="font-family:var(--font-title);font-size:1.6rem;color:var(--rasti-yellow);line-height:1.05;">
               ${w.name.toUpperCase()}
             </h2>
-            <div style="font-family:var(--font-btn);font-weight:700;font-size:0.86rem;margin-top:3px;">
+            <div style="font-family:var(--font-btn);font-weight:700;font-size:0.84rem;margin-top:3px;">
               ⭐ ${w.starsEarned}/${w.totalStars} Estrellas • Nivel ${w.completedMissions}/${w.totalMissions}
             </div>
           </div>
         </div>
 
         <div style="display:flex;gap:8px;margin-right:42px;">
-          <button type="button" class="btn-rasti btn-rasti-yellow" style="padding:8px 14px;font-size:0.82rem;" onclick="RastiApp.speakWorldStory('${w.id}')">
+          ${w.id === 'reino' ? `
+            <button type="button" class="btn-rasti btn-rasti-white" style="padding:7px 12px;font-size:0.78rem;" onclick="RastiApp.openWorldModal('reino', null, true)">
+              📖 HISTORIA DEL REINO
+            </button>
+          ` : ''}
+          <button type="button" class="btn-rasti btn-rasti-yellow" style="padding:7px 14px;font-size:0.8rem;"
+                  onclick="${w.id === 'reino' && chosenMission.num === 1 ? `RastiApp.speakMissionStory('reino', 1)` : `RastiApp.speakWorldStory('${w.id}')`}">
             🔊 ESCUCHAR
           </button>
         </div>
       </div>
 
       <!-- MAPA VISUAL DE CAMINO DE NIVELES (1 -> 2 -> 3 -> 4 -> 5 -> 6) -->
-      <div class="visual-level-map">
-        <div class="level-nodes-path">
+      <div class="visual-level-map" style="padding:14px 18px 10px;margin-bottom:10px;">
+        <div class="level-nodes-path" style="padding:10px 8px;">
           ${w.missions.map(m => {
             const isSelected = m.num === chosenMission.num;
             const iconInside = m.status === 'completed' ? '✓' : (m.status === 'locked' ? '🔒' : m.num);
@@ -1038,10 +954,10 @@ const RastiApp = (() => {
             return `
               <button type="button"
                       class="level-node-btn ${m.status}"
-                      onclick="RastiApp.openWorldModal('${w.id}', ${m.num})"
+                      onclick="RastiApp.openWorldModal('${w.id}', ${m.num}, false)"
                       style="${isSelected ? 'filter:drop-shadow(0 0 10px rgba(0,81,186,0.55));' : ''}">
-                ${m.status === 'current' ? `<img class="level-node-avatar-pin" src="${profile.img}" alt="${profile.name}" />` : ''}
-                <div class="level-node-circle">
+                ${m.status === 'current' ? `<img class="level-node-avatar-pin" src="${profile.img}" alt="Avatar" />` : ''}
+                <div class="level-node-circle" style="width:58px;height:58px;font-size:1.35rem;">
                   <span>${iconInside}</span>
                 </div>
                 <span class="level-node-stars">${starsRow}</span>
@@ -1052,39 +968,40 @@ const RastiApp = (() => {
         </div>
       </div>
 
-      <!-- TARJETA VISUAL DEL NIVEL SELECCIONADO -->
-      <div class="level-visual-action-card">
-        <div class="level-build-preview-box">
-          <img src="${w.buildPreview}" alt="${chosenMission.title}" />
-          <div>
-            <span style="background:var(--rasti-light);color:var(--rasti-blue);font-family:var(--font-btn);font-weight:700;font-size:0.75rem;padding:3px 10px;border-radius:999px;">
-              NIVEL ${chosenMission.num}
-            </span>
-            <h3 style="font-family:var(--font-title);font-size:1.35rem;color:var(--rasti-navy);margin-top:4px;">
-              ${chosenMission.title}
-            </h3>
+      <!-- TARJETA VISUAL DEL NIVEL SELECCIONADO (Con imagen de puente destruido y descripción en Nivel 1) -->
+      <div class="level-visual-action-card" style="align-items:center;gap:14px;">
+        <div class="level-build-preview-box" style="flex:1;align-items:center;">
+          <img src="${previewImg}" alt="${chosenMission.title}" style="width:145px;height:115px;object-fit:cover;border-radius:16px;border:3px solid var(--rasti-cyan);flex-shrink:0;" />
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <span style="background:var(--rasti-light);color:var(--rasti-blue);font-family:var(--font-btn);font-weight:700;font-size:0.75rem;padding:3px 10px;border-radius:999px;">
+                NIVEL ${chosenMission.num}
+              </span>
+              <h3 style="font-family:var(--font-title);font-size:1.3rem;color:var(--rasti-navy);">
+                ${chosenMission.title}
+              </h3>
+            </div>
             ${chosenMission.status === 'locked' ? `
-              <div style="margin-top:4px;font-family:var(--font-btn);font-weight:700;font-size:0.86rem;color:var(--rasti-red);">
-                🔒 Debes completar el nivel 1 de Reino Perdido para avanzar
+              <div style="margin-top:6px;font-family:var(--font-btn);font-weight:700;font-size:0.9rem;color:var(--rasti-red);">
+                🔒 Debe completar el mundo "Reino Perdido" para desbloquear este nivel
               </div>
             ` : `
-              <div style="display:flex;gap:10px;margin-top:4px;font-family:var(--font-btn);font-weight:700;font-size:0.84rem;color:var(--rasti-forest);">
-                <span>🧱 ${chosenMission.blocks} bloques</span>
-                <span>⭐ +${chosenMission.stars} estrellas</span>
-              </div>
+              <p style="margin-top:5px;font-family:var(--font-btn);font-size:0.82rem;line-height:1.35;color:#1e293b;font-weight:600;">
+                ${chosenMission.desc}
+              </p>
             `}
           </div>
         </div>
 
-        <div>
+        <div style="flex-shrink:0;">
           ${chosenMission.status === 'locked' ? `
-            <button type="button" class="btn-rasti btn-rasti-primary" style="padding:11px 18px;font-size:0.88rem;"
-                    onclick="RastiApp.openWorldModal('reino', 1)">
+            <button type="button" class="btn-rasti btn-rasti-primary" style="padding:11px 16px;font-size:0.85rem;"
+                    onclick="RastiApp.openWorldModal('reino', 1, false)">
               🏰 IR A NIVEL 1 DE REINO PERDIDO →
             </button>
           ` : `
-            <button type="button" class="btn-rasti btn-rasti-build" style="padding:12px 24px;font-size:1rem;"
-                    onclick="RastiApp.openScannerModal('${chosenMission.title}', '${w.name}', '${w.buildPreview}', ${chosenMission.stars})">
+            <button type="button" class="btn-rasti btn-rasti-build" style="padding:12px 20px;font-size:0.95rem;"
+                    onclick="RastiApp.openScannerModal('${chosenMission.title}', '${w.name}', '${chosenMission.modelImg || w.buildPreview}', ${chosenMission.stars})">
               📷 ESCANEAR CON CÁMARA
             </button>
           `}
@@ -1101,12 +1018,20 @@ const RastiApp = (() => {
     const mp3Map = {
       espacial: 'world_espacial.mp3',
       isla: 'world_isla.mp3',
-      reino: 'world_reino.mp3',
+      reino: 'reino_intro.mp3',
       submarina: 'world_submarina.mp3'
     };
-    const text = RASTI_DATA.user.ageGroup === '4-6' ? w.storyAudio4to6 : w.storyText7to10;
+    const text = w.worldIntro || (RASTI_DATA.user.ageGroup === '4-6' ? w.storyAudio4to6 : w.storyText7to10);
     showToast(`🔊 "${w.name}"`, '🇦🇷');
     playArgentineVoice(mp3Map[w.id], text);
+  }
+
+  function speakMissionStory(worldId, missionNum) {
+    const w = RASTI_DATA.worlds.find(item => item.id === worldId);
+    const m = w && w.missions.find(item => item.num === missionNum);
+    if (!m) return;
+    showToast(`🔊 Nivel ${m.num}: ${m.title}`, '🇦🇷');
+    playArgentineVoice(m.audioFile || 'reino_nivel1.mp3', m.desc);
   }
 
   // ==========================================================================
@@ -1198,7 +1123,6 @@ const RastiApp = (() => {
     stopWebcamStream();
     RASTI_DATA.user.stars += starsReward;
 
-    // Si completó el Nivel 1 de Reino Perdido (o la misión actual del mundo activo), avanzar progreso
     const targetWorld = RASTI_DATA.worlds.find(w => w.name === worldName || w.id === state.selectedWorldId);
     if (targetWorld) {
       const mission = targetWorld.missions.find(m => m.title === buildTitle) ||
@@ -1207,21 +1131,6 @@ const RastiApp = (() => {
         mission.status = 'completed';
         targetWorld.completedMissions = targetWorld.missions.filter(m => m.status === 'completed').length;
         targetWorld.starsEarned = Math.min(targetWorld.totalStars, targetWorld.starsEarned + starsReward);
-        const nextMission = targetWorld.missions.find(m => m.num === mission.num + 1);
-        if (nextMission && nextMission.status === 'locked') {
-          nextMission.status = 'current';
-        }
-      }
-      // Si se acaba de completar el Nivel 1 de Reino Perdido, habilitar el Nivel 1 de los demás mundos
-      if (targetWorld.id === 'reino' && isReinoLevel1Completed()) {
-        RASTI_DATA.worlds.forEach(w => {
-          if (w.id !== 'reino') {
-            const firstM = w.missions.find(m => m.num === 1);
-            if (firstM && firstM.status === 'locked') {
-              firstM.status = 'current';
-            }
-          }
-        });
       }
     }
 
@@ -1232,7 +1141,7 @@ const RastiApp = (() => {
         name: buildTitle,
         world: worldName,
         img: imgPath,
-        blocks: 42,
+        blocks: 25,
         stars: starsReward,
         precision: '98%'
       });
@@ -1242,8 +1151,77 @@ const RastiApp = (() => {
     renderModos();
     renderLogros();
     closeModal();
-    playArgentineVoice('scan_success.mp3', '¡Excelente construcción! Se sumó a tu aventura y ganaste nuevas estrellas.');
-    showToast(`🎉 ¡"${buildTitle}" escaneada! Ganaste +${starsReward} ⭐`, '🚀');
+
+    // 1. Mostrar mensaje de "Construcción exitosa" y luego el video adjunto a pantalla completa
+    showSuccessAndPlayFullscreenVideo();
+  }
+
+  function showSuccessAndPlayFullscreenVideo() {
+    const overlay = document.getElementById('fullscreen-story-overlay');
+    const inner = document.getElementById('fullscreen-story-inner');
+    if (!overlay || !inner) return;
+
+    overlay.style.display = 'flex';
+    inner.innerHTML = `
+      <div style="text-align:center;color:#ffffff;padding:24px;animation:popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);">
+        <div style="font-size:4.2rem;margin-bottom:10px;">✅</div>
+        <h2 style="font-family:var(--font-title);font-size:2.6rem;color:var(--rasti-yellow);text-shadow:0 4px 16px rgba(0,0,0,0.5);">
+          ¡CONSTRUCCIÓN EXITOSA!
+        </h2>
+        <p style="font-family:var(--font-btn);font-size:1.15rem;color:#e0f2fe;margin-top:8px;">
+          El nuevo puente del Reino Perdido está listo. Cargando historia...
+        </p>
+      </div>
+    `;
+
+    playArgentineVoice('construccion_exitosa.mp3', '¡Construcción exitosa!');
+
+    setTimeout(() => {
+      playFullscreenBridgeVideo();
+    }, 1700);
+  }
+
+  function playFullscreenBridgeVideo() {
+    const overlay = document.getElementById('fullscreen-story-overlay');
+    const inner = document.getElementById('fullscreen-story-inner');
+    if (!overlay || !inner) return;
+
+    overlay.style.display = 'flex';
+    inner.innerHTML = `
+      <video id="rasti-story-video-player"
+             src="assets/video/reino-nivel1-historia.mp4"
+             autoplay
+             controls
+             playsinline
+             style="width:100%;height:100%;object-fit:contain;background:#000;"></video>
+      <button type="button"
+              class="btn-rasti btn-rasti-build"
+              onclick="RastiApp.closeFullscreenStoryVideo()"
+              style="position:absolute;top:16px;right:18px;z-index:20;padding:8px 18px;font-size:0.9rem;">
+        ✕ CERRAR VIDEO
+      </button>
+    `;
+
+    const vid = document.getElementById('rasti-story-video-player');
+    if (vid) {
+      vid.play().catch(() => {});
+      vid.onended = () => {
+        showToast('🎉 ¡Completaste el Nivel 1 de Reino Perdido!', '🏰');
+      };
+    }
+  }
+
+  function closeFullscreenStoryVideo() {
+    playTone('click');
+    const vid = document.getElementById('rasti-story-video-player');
+    if (vid) {
+      vid.pause();
+      vid.src = '';
+    }
+    const overlay = document.getElementById('fullscreen-story-overlay');
+    if (overlay) {
+      overlay.style.display = 'none';
+    }
   }
 
   function openStoryMovieModal(worldId) {
@@ -1802,8 +1780,12 @@ const RastiApp = (() => {
     claimChallengeReward,
     openWorldModal,
     speakWorldStory,
+    speakMissionStory,
     openScannerModal,
     confirmScannedBuild,
+    showSuccessAndPlayFullscreenVideo,
+    playFullscreenBridgeVideo,
+    closeFullscreenStoryVideo,
     openStoryMovieModal,
     openShareCreationModal,
     submitCreationForModeration,

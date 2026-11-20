@@ -178,22 +178,21 @@
               </div>
             </div>
 
-            <!-- PASO 3: Personalización Rápida del Personaje -->
+            <!-- PASO 3: Personalización Rápida del Personaje (Sin nombres) -->
             <div class="onboarding-step" id="onb-step-3">
-              <h2 class="onb-title">🎨 ¡ELEGÍ TU AVATAR PROTAGONISTA!</h2>
-              <p class="onb-subtitle">Elegí quién te va a acompañar en todas las historias (después podés cambiarle toda la ropa)</p>
+              <h2 class="onb-title">🎨 ¡ELEGÍ TU PROTAGONISTA!</h2>
+              <p class="onb-subtitle">Elegí quién te va a acompañar en todas las aventuras</p>
 
               <div class="onb-avatar-picker-layout">
                 <div class="onb-avatar-big-preview">
-                  <img id="onb-preview-img" src="assets/avatars/avatar-1.png" alt="Avatar elegido" />
-                  <span id="onb-preview-name">Leo</span>
+                  <img id="onb-preview-img" src="assets/custom/char-1.png" alt="Protagonista elegido" style="width:115px;height:145px;border-radius:18px;object-fit:contain;background:rgba(255,255,255,0.12);" />
                   <button type="button" class="onb-random-btn" onclick="RastiApp.randomizeAvatar();RastiApp.syncOnboardingPreview();">
                     🎲 Sorpresa
                   </button>
                 </div>
 
                 <div class="onb-avatars-grid" id="onb-avatars-grid">
-                  <!-- Renderizado con los 10 perfiles de Página 3 -->
+                  <!-- Renderizado con los 10 protagonistas sin nombres -->
                 </div>
               </div>
 
@@ -268,7 +267,7 @@
                   🔊
                 </button>
                 <div class="welcome-text-block">
-                  <h2>¡Hola, <span id="inicio-welcome-name">Leo</span>! 👋</h2>
+                  <h2>¡Hola! 👋</h2>
                   <p id="inicio-welcome-msg">¡Elegí tu aventura para empezar a construir!</p>
                 </div>
               </div>
@@ -288,30 +287,25 @@
           </section>
 
           <!-- ==============================================================
-               2. SECCIÓN: PERSONALIZACIÓN (Página 3 del PDF)
+               2. SECCIÓN: PERSONALIZACIÓN (Elementos Oficiales Adjuntos)
                ============================================================== -->
           <section id="screen-personalizacion" class="app-screen" aria-label="Personalización del Avatar">
 
             <div class="custom-header-bar">
               <div class="custom-header-left">
-                <button type="button" class="btn-circle-3d white" onclick="RastiApp.navigate('inicio')" title="Volver a Inicio">
-                  ←
+                <button type="button" class="custom-img-back-btn" onclick="RastiApp.navigate('inicio')" title="Volver a Inicio">
+                  <img src="assets/custom/btn-volver.png" alt="Volver" />
                 </button>
-                <div class="personaliza-title-badge">
-                  <div class="personaliza-title-text">
-                    <span class="line-white">PERSONALIZÁ</span>
-                    <span class="line-yellow">TU AVATAR</span>
-                  </div>
-                  <img class="personaliza-title-brick" src="assets/ui/isotipo-rasti.png" alt="Bloque Rasti" />
-                </div>
+                <img class="custom-header-banner-img" src="assets/custom/header-personaliza.png" alt="Personalizá tu Avatar" />
               </div>
 
-              <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.85);padding:4px 8px;border-radius:999px;border:2px solid #bae6fd;">
-                <button type="button" class="demo-chip active" id="btn-gender-boy" style="color:var(--rasti-navy);" onclick="RastiApp.setCharacterGender('boy')">
-                  👦 Modelo Leo
+              <!-- Selector Símbolo Hombre (♂) y Mujer (♀) -->
+              <div class="gender-symbol-switcher">
+                <button type="button" class="gender-sym-btn active" id="btn-gender-boy" onclick="RastiApp.setCharacterGender('boy')" title="Niños (♂)">
+                  ♂
                 </button>
-                <button type="button" class="demo-chip" id="btn-gender-girl" style="color:var(--rasti-navy);" onclick="RastiApp.setCharacterGender('girl')">
-                  👧 Modelo Sofi
+                <button type="button" class="gender-sym-btn" id="btn-gender-girl" onclick="RastiApp.setCharacterGender('girl')" title="Niñas (♀)">
+                  ♀
                 </button>
               </div>
 
@@ -321,31 +315,25 @@
             </div>
 
             <div class="custom-main-grid">
+              <!-- Vista del Personaje en Cuerpo Completo con ÚNICAMENTE Sorpresa y Lupa de Zoom -->
               <div class="character-stage-card" id="character-stage-card">
-                <img id="stage-character-img" class="stage-bg-image" src="assets/custom/boy-full.png" alt="Vista previa del avatar" />
-                <div class="stage-equipped-pills" id="stage-equipped-pills"></div>
-                <div class="stage-live-preview-box" id="stage-live-preview-box"></div>
+                <img id="stage-character-img" class="stage-fullbody-char" src="assets/custom/char-1.png" alt="Vista del personaje" />
 
-                <div class="stage-side-controls">
-                  <button type="button" class="stage-ctrl-btn" onclick="RastiApp.toggleCharacterFlip()" title="Girar personaje">↺</button>
-                  <button type="button" class="stage-ctrl-btn" onclick="RastiApp.toggleCharacterZoom()" title="Acercar / Alejar">🔍</button>
-                </div>
+                <button type="button" class="stage-zoom-img-btn" onclick="RastiApp.toggleCharacterZoom()" title="Acercar / Alejar">
+                  <img src="assets/custom/btn-lupa.png" alt="Zoom" />
+                </button>
 
-                <button type="button" class="btn-sorpresa" onclick="RastiApp.randomizeAvatar()">
-                  <span>🎲</span>
-                  <span>SORPRESA</span>
+                <button type="button" class="stage-sorpresa-img-btn" onclick="RastiApp.randomizeAvatar()" title="Sorpresa">
+                  <img src="assets/custom/btn-sorpresa.png" alt="Sorpresa" />
                 </button>
               </div>
 
+              <!-- Panel de Opciones Visuales (Sin peinados, sin nombres, imágenes más grandes) -->
               <div class="custom-options-panel">
                 <div class="custom-category-tabs" role="tablist">
                   <button type="button" class="cat-tab-btn active" data-cat="all" onclick="RastiApp.filterCustomCategory('all')">
-                    <span class="cat-icon">👦</span>
-                    <span>APARIENCIA</span>
-                  </button>
-                  <button type="button" class="cat-tab-btn" data-cat="peinados" onclick="RastiApp.filterCustomCategory('peinados')">
-                    <span class="cat-icon">💇</span>
-                    <span>PEINADOS</span>
+                    <span class="cat-icon">🧑</span>
+                    <span>PERSONAJE</span>
                   </button>
                   <button type="button" class="cat-tab-btn" data-cat="ropa" onclick="RastiApp.filterCustomCategory('ropa')">
                     <span class="cat-icon">👕</span>
@@ -361,62 +349,28 @@
                   </button>
                 </div>
 
+                <!-- 1. Personajes (Solo niños en ♂ y solo niñas en ♀, sin nombres y más grandes) -->
                 <div class="custom-section-box" data-section="apariencia">
-                  <div class="custom-box-label">
-                    <span>PERSONAJE BASE</span>
-                    <span style="color:var(--rasti-blue);font-size:0.68rem;">10 protagonistas</span>
-                  </div>
-                  <div class="base-profiles-row" id="custom-profiles-row"></div>
+                  <div class="base-profiles-row large-no-names" id="custom-profiles-row"></div>
                 </div>
 
-                <div class="custom-row-split" data-section="apariencia">
-                  <div class="custom-section-box">
-                    <div class="custom-box-label">
-                      <span>COLOR DE PIEL</span>
-                      <span id="label-skin-name" style="color:var(--rasti-blue);font-size:0.68rem;">Trigueño Suave</span>
-                    </div>
-                    <div class="swatch-row" id="custom-skin-row"></div>
-                  </div>
-                  <div class="custom-section-box">
-                    <div class="custom-box-label">
-                      <span>COLOR DE OJOS</span>
-                      <span id="label-eye-name" style="color:var(--rasti-blue);font-size:0.68rem;">Castaño</span>
-                    </div>
-                    <div class="swatch-row" id="custom-eyes-row"></div>
-                  </div>
-                </div>
-
-                <div class="custom-section-box" data-section="peinados">
-                  <div class="custom-box-label">
-                    <span>PEINADOS Y COLOR DE PELO</span>
-                    <span id="label-hair-name" style="color:var(--rasti-blue);font-size:0.68rem;">Rulos Aventureros</span>
-                  </div>
-                  <div class="hairstyles-grid" id="custom-hairstyles-grid"></div>
-                  <div class="custom-box-sublabel" style="margin-top:5px;">COLOR DE PELO</div>
-                  <div class="swatch-row" id="custom-haircolor-row"></div>
-                </div>
-
+                <!-- 2. Ropa (Arriba y Abajo según género) + Trajes y Accesorios -->
                 <div class="custom-bottom-split">
                   <div class="custom-section-box" data-section="ropa">
-                    <div class="custom-box-label">
-                      <span>ROPA</span>
-                      <span id="label-clothes-name" style="color:var(--rasti-blue);font-size:0.68rem;">Chaleco + Cargo</span>
-                    </div>
-                    <div class="custom-box-sublabel">PARTE DE ARRIBA</div>
-                    <div class="clothes-grid" id="custom-tops-grid"></div>
-                    <div class="custom-box-sublabel" style="margin-top:4px;">PARTE DE ABAJO</div>
-                    <div class="clothes-grid" id="custom-bottoms-grid"></div>
+                    <div class="custom-box-label"><span>ROPA</span></div>
+                    <div class="clothes-grid large-clothes" id="custom-tops-grid"></div>
+                    <div class="clothes-grid large-clothes" id="custom-bottoms-grid" style="margin-top:6px;"></div>
                   </div>
 
-                  <div style="display:flex;flex-direction:column;gap:6px;">
+                  <div style="display:flex;flex-direction:column;gap:8px;">
                     <div class="custom-section-box" data-section="trajes">
                       <div class="custom-box-label"><span>TRAJES ESPECIALES</span></div>
-                      <div class="suits-grid" id="custom-suits-grid"></div>
+                      <div class="suits-grid large-suits" id="custom-suits-grid"></div>
                     </div>
 
                     <div class="custom-section-box" data-section="accesorios">
-                      <div class="custom-box-label"><span>ACCESORIOS Y MOCHILAS</span></div>
-                      <div class="accessories-grid" id="custom-accessories-grid"></div>
+                      <div class="custom-box-label"><span>ACCESORIOS</span></div>
+                      <div class="accessories-grid large-accessories" id="custom-accessories-grid"></div>
                     </div>
                   </div>
                 </div>
@@ -577,6 +531,13 @@
             </button>
             <div id="rasti-modal-content"></div>
           </div>
+        </div>
+
+        <!-- ================================================================
+             REPRODUCTOR DE VIDEO DE HISTORIA A PANTALLA COMPLETA
+             ================================================================ -->
+        <div class="fullscreen-story-overlay" id="fullscreen-story-overlay" style="display:none;">
+          <div id="fullscreen-story-inner" style="width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center;background:#000;"></div>
         </div>
 
       </div>

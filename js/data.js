@@ -34,18 +34,18 @@ window.RASTI_DATA = {
     ]
   },
 
-  // 10 Perfiles de niños/as oficiales del PDF (Página 3)
+  // 10 Perfiles de niños/as oficiales (Sin mostrar nombres en la interfaz)
   profiles: [
-    { id: 1, name: 'Leo', tag: 'Explorador Curioso', gender: 'boy', img: 'assets/avatars/avatar-1.png', color: '#0051ba' },
-    { id: 2, name: 'Sofi', tag: 'Creadora de Mundos', gender: 'girl', img: 'assets/avatars/avatar-2.png', color: '#ed1d24' },
-    { id: 3, name: 'Mateo', tag: 'Piloto Turbo', gender: 'boy', img: 'assets/avatars/avatar-3.png', color: '#ffe600' },
-    { id: 4, name: 'Mora', tag: 'Arquitecta Real', gender: 'girl', img: 'assets/avatars/avatar-4.png', color: '#00246b' },
-    { id: 5, name: 'Tomi', tag: 'Maestro de Bloques', gender: 'boy', img: 'assets/avatars/avatar-5.png', color: '#ed1d24' },
-    { id: 6, name: 'Emma', tag: 'Detective de la Isla', gender: 'girl', img: 'assets/avatars/avatar-6.png', color: '#ffe600' },
-    { id: 7, name: 'Lucas', tag: 'Inventor Espacial', gender: 'boy', img: 'assets/avatars/avatar-7.png', color: '#0051ba' },
-    { id: 8, name: 'Valen', tag: 'Capitana Submarina', gender: 'girl', img: 'assets/avatars/avatar-8.png', color: '#ed1d24' },
-    { id: 9, name: 'Santi', tag: 'Guardián de la Selva', gender: 'boy', img: 'assets/avatars/avatar-9.png', color: '#8dc63f' },
-    { id: 10, name: 'Cami', tag: 'Soñadora Galáctica', gender: 'girl', img: 'assets/avatars/avatar-10.png', color: '#00246b' }
+    { id: 1, gender: 'boy', img: 'assets/avatars/avatar-1.png', fullImg: 'assets/custom/char-1.png', color: '#0051ba' },
+    { id: 2, gender: 'girl', img: 'assets/avatars/avatar-2.png', fullImg: 'assets/custom/char-2.png', color: '#ed1d24' },
+    { id: 3, gender: 'boy', img: 'assets/avatars/avatar-3.png', fullImg: 'assets/custom/char-3.png', color: '#ffe600' },
+    { id: 4, gender: 'girl', img: 'assets/avatars/avatar-4.png', fullImg: 'assets/custom/char-4.png', color: '#00246b' },
+    { id: 5, gender: 'boy', img: 'assets/avatars/avatar-5.png', fullImg: 'assets/custom/char-5.png', color: '#ed1d24' },
+    { id: 6, gender: 'girl', img: 'assets/avatars/avatar-6.png', fullImg: 'assets/custom/char-6.png', color: '#ffe600' },
+    { id: 7, gender: 'boy', img: 'assets/avatars/avatar-7.png', fullImg: 'assets/custom/char-7.png', color: '#0051ba' },
+    { id: 8, gender: 'girl', img: 'assets/avatars/avatar-8.png', fullImg: 'assets/custom/char-8.png', color: '#ed1d24' },
+    { id: 9, gender: 'boy', img: 'assets/avatars/avatar-9.png', fullImg: 'assets/custom/char-9.png', color: '#8dc63f' },
+    { id: 10, gender: 'girl', img: 'assets/avatars/avatar-10.png', fullImg: 'assets/custom/char-10.png', color: '#00246b' }
   ],
 
   // 4 Mundos Oficiales de "Modo Aventura" (Reino Perdido 1° y Estación Espacial 3°)
@@ -54,10 +54,10 @@ window.RASTI_DATA = {
       id: 'reino',
       name: 'Reino Perdido',
       shortTitle: 'El Reino Perdido',
-      subtitle: 'Defendé castillos mágicos, torres reales y puentes levadizos',
+      subtitle: 'Reconstruí el camino que alguna vez unió las tierras del Reino Perdido',
       badgeImg: 'assets/worlds/badge-reino-perdido.png',
       islandImg: 'assets/worlds/island-reino-perdido.png',
-      buildPreview: 'assets/builds/build-castle.jpg',
+      buildPreview: 'assets/builds/reino-puente-modelo.png',
       palette: ['#ffcb05', '#047e48', '#8cc63e', '#00adef', '#ed1d24', '#6a220c'],
       accentColor: '#ed1d24',
       secondaryColor: '#ffcb05',
@@ -68,10 +68,24 @@ window.RASTI_DATA = {
       totalStars: 60,
       difficulty: 'Inicial',
       blocksRequired: 25,
-      storyAudio4to6: '¡El rey y la reina necesitan reconstruir la torre roja del castillo! ¿Nos ayudás con tus bloques?',
-      storyText7to10: 'Las antiguas murallas del Reino Perdido esperan a un gran arquitecto. Reconstruí las torres reales y el emblema dorado para restaurar la magia.',
+      worldIntro: 'Hace mucho tiempo, existía un reino oculto entre montañas, bosques y antiguos secretos. Sus habitantes vivían en armonía, hasta que un misterioso acontecimiento hizo que el reino quedara aislado y sus caminos desaparecieran. Ahora, sus tierras están llenas de lugares por descubrir, tesoros olvidados y desafíos que esperan ser superados. Pero para llegar al corazón del Reino Perdido, primero tendrás que reconstruir el camino que alguna vez unió sus tierras.',
+      worldIntroAudio: 'reino_intro.mp3',
+      storyAudio4to6: 'Hace mucho tiempo, existía un reino oculto entre montañas, bosques y antiguos secretos. Sus habitantes vivían en armonía, hasta que un misterioso acontecimiento hizo que el reino quedara aislado y sus caminos desaparecieran. Ahora, sus tierras están llenas de lugares por descubrir, tesoros olvidados y desafíos que esperan ser superados. Pero para llegar al corazón del Reino Perdido, primero tendrás que reconstruir el camino que alguna vez unió sus tierras.',
+      storyText7to10: 'Hace mucho tiempo, existía un reino oculto entre montañas, bosques y antiguos secretos. Sus habitantes vivían en armonía, hasta que un misterioso acontecimiento hizo que el reino quedara aislado y sus caminos desaparecieran. Ahora, sus tierras están llenas de lugares por descubrir, tesoros olvidados y desafíos que esperan ser superados. Pero para llegar al corazón del Reino Perdido, primero tendrás que reconstruir el camino que alguna vez unió sus tierras.',
       missions: [
-        { num: 1, title: 'Portón y Puente Levadizo', blocks: 25, stars: 10, status: 'current', desc: 'La entrada principal al gran castillo Rasti.' },
+        {
+          num: 1,
+          title: 'Construir un Puente',
+          blocks: 25,
+          stars: 10,
+          status: 'current',
+          desc: '¡Oh, no! El puente que conectaba las dos orillas se derrumbó y el río impide que sigamos avanzando. Para continuar nuestra aventura, necesitamos construir un nuevo puente que nos permita cruzar al otro lado. ¡Es hora de poner a prueba tu ingenio y creatividad! Usá tus bloques Rasti para construir un puente resistente y devolverle al reino su camino.',
+          sceneImg: 'assets/worlds/reino-nivel1-puente-destruido.jpg',
+          modelImg: 'assets/builds/reino-puente-modelo.png',
+          demoImg: 'assets/builds/reino-puente-demo.jpg',
+          audioFile: 'reino_nivel1.mp3',
+          videoFile: 'assets/video/reino-nivel1-historia.mp4'
+        },
         { num: 2, title: 'Torre del Reloj Real', blocks: 35, stars: 15, status: 'locked', desc: 'Una torre alta con techo rojo y banderín amarillo.' },
         { num: 3, title: 'Carruaje de Cristales', blocks: 30, stars: 10, status: 'locked', desc: 'Transportá los bloques mágicos por el bosque real.' },
         { num: 4, title: 'Dragón Guardián Amigable', blocks: 48, stars: 10, status: 'locked', desc: 'Un dragón rojo y dorado que cuida la corona.' },
@@ -217,61 +231,65 @@ window.RASTI_DATA = {
     },
     tops: {
       boy: [
-        { id: 1, name: 'Chaleco Explorador', img: 'assets/custom/top-boy-1.png', locked: false },
-        { id: 2, name: 'Buzo Rojo Rasti', img: 'assets/custom/top-boy-2.png', locked: false },
-        { id: 3, name: 'Remera Bloque Rasti', img: 'assets/custom/top-boy-3.png', locked: false },
-        { id: 4, name: 'Campera Amarilla', img: 'assets/custom/top-boy-4.png', locked: false },
-        { id: 5, name: 'Buzo Dino Azul', img: 'assets/custom/top-boy-5.png', locked: false },
-        { id: 6, name: 'Parka de la Selva', img: 'assets/custom/top-boy-6.png', locked: true, cost: 15 },
-        { id: 7, name: 'Hoodie Galáctico', img: 'assets/custom/top-boy-7.png', locked: true, cost: 20 }
+        { id: 1, img: 'assets/custom/top-boy-1.png', locked: false },
+        { id: 2, img: 'assets/custom/top-boy-2.png', locked: false },
+        { id: 3, img: 'assets/custom/top-boy-3.png', locked: false },
+        { id: 4, img: 'assets/custom/top-boy-4.png', locked: false },
+        { id: 5, img: 'assets/custom/top-boy-5.png', locked: false },
+        { id: 6, img: 'assets/custom/top-boy-6.png', locked: false },
+        { id: 7, img: 'assets/custom/top-boy-7.png', locked: false }
       ],
       girl: [
-        { id: 1, name: 'Buzo Pastel Rayado', img: 'assets/custom/top-girl-1.png', locked: false },
-        { id: 2, name: 'Campera Rosa', img: 'assets/custom/top-girl-2.png', locked: false },
-        { id: 3, name: 'Remera Flores', img: 'assets/custom/top-girl-3.png', locked: false },
-        { id: 4, name: 'Sweater Estrella', img: 'assets/custom/top-girl-4.png', locked: false },
-        { id: 5, name: 'Campera de Jean', img: 'assets/custom/top-girl-5.png', locked: false },
-        { id: 6, name: 'Sweater Margarita', img: 'assets/custom/top-girl-6.png', locked: false },
-        { id: 7, name: 'Hoodie Violeta', img: 'assets/custom/top-girl-7.png', locked: true, cost: 15 }
+        { id: 1, img: 'assets/custom/top-girl-1.png', locked: false },
+        { id: 2, img: 'assets/custom/top-girl-2.png', locked: false },
+        { id: 3, img: 'assets/custom/top-girl-3.png', locked: false },
+        { id: 4, img: 'assets/custom/top-girl-4.png', locked: false },
+        { id: 5, img: 'assets/custom/top-girl-5.png', locked: false },
+        { id: 6, img: 'assets/custom/top-girl-6.png', locked: false },
+        { id: 7, img: 'assets/custom/top-girl-7.png', locked: false },
+        { id: 8, img: 'assets/custom/top-girl-8.png', locked: false }
       ]
     },
     bottoms: {
       boy: [
-        { id: 1, name: 'Cargo Arena', img: 'assets/custom/bottom-boy-1.png', locked: false },
-        { id: 2, name: 'Bermuda de Jean', img: 'assets/custom/bottom-boy-2.png', locked: false },
-        { id: 3, name: 'Jogger Oscuro', img: 'assets/custom/bottom-boy-3.png', locked: false },
-        { id: 4, name: 'Cargo Verde Isla', img: 'assets/custom/bottom-boy-4.png', locked: false },
-        { id: 5, name: 'Pantalón Montaña', img: 'assets/custom/bottom-boy-5.png', locked: false },
-        { id: 6, name: 'Short Deportivo', img: 'assets/custom/bottom-boy-6.png', locked: true, cost: 10 },
-        { id: 7, name: 'Pantalón Espacial', img: 'assets/custom/bottom-boy-7.png', locked: true, cost: 15 }
+        { id: 1, img: 'assets/custom/bottom-boy-1.png', locked: false },
+        { id: 2, img: 'assets/custom/bottom-boy-2.png', locked: false },
+        { id: 3, img: 'assets/custom/bottom-boy-3.png', locked: false },
+        { id: 4, img: 'assets/custom/bottom-boy-4.png', locked: false },
+        { id: 5, img: 'assets/custom/bottom-boy-5.png', locked: false },
+        { id: 6, img: 'assets/custom/bottom-boy-6.png', locked: false },
+        { id: 7, img: 'assets/custom/bottom-boy-7.png', locked: false }
       ],
       girl: [
-        { id: 1, name: 'Jean Cargo Corazón', img: 'assets/custom/bottom-girl-1.png', locked: false },
-        { id: 2, name: 'Cargo Verde Selva', img: 'assets/custom/bottom-girl-2.png', locked: false },
-        { id: 3, name: 'Pantalón Rosa Pop', img: 'assets/custom/bottom-girl-3.png', locked: false },
-        { id: 4, name: 'Pollera de Jean', img: 'assets/custom/bottom-girl-4.png', locked: false },
-        { id: 5, name: 'Pollera Tablas', img: 'assets/custom/bottom-girl-5.png', locked: false },
-        { id: 6, name: 'Short Violeta', img: 'assets/custom/bottom-girl-6.png', locked: false },
-        { id: 7, name: 'Jean Clásico', img: 'assets/custom/bottom-girl-7.png', locked: true, cost: 10 }
+        { id: 1, img: 'assets/custom/bottom-girl-1.png', locked: false },
+        { id: 2, img: 'assets/custom/bottom-girl-2.png', locked: false },
+        { id: 3, img: 'assets/custom/bottom-girl-3.png', locked: false },
+        { id: 4, img: 'assets/custom/bottom-girl-4.png', locked: false },
+        { id: 5, img: 'assets/custom/bottom-girl-5.png', locked: false },
+        { id: 6, img: 'assets/custom/bottom-girl-6.png', locked: false },
+        { id: 7, img: 'assets/custom/bottom-girl-7.png', locked: false },
+        { id: 8, img: 'assets/custom/bottom-girl-8.png', locked: false }
       ]
     },
-    specialSuits: [
-      { id: 1, name: 'Traje Astronauta', world: 'Estación Espacial', img: 'assets/custom/suit-1.png', locked: false },
-      { id: 2, name: 'Traje Explorador', world: 'Isla Misteriosa', img: 'assets/custom/suit-2.png', locked: true, cost: 25 },
-      { id: 3, name: 'Traje Submarino', world: 'Expedición Submarina', img: 'assets/custom/suit-3.png', locked: true, cost: 25 }
-    ],
+    specialSuits: {
+      boy: [
+        { id: 1, img: 'assets/custom/suit-boy-1.png', locked: false },
+        { id: 2, img: 'assets/custom/suit-boy-2.png', locked: false },
+        { id: 3, img: 'assets/custom/suit-boy-3.png', locked: false }
+      ],
+      girl: [
+        { id: 1, img: 'assets/custom/suit-girl-1.png', locked: false },
+        { id: 2, img: 'assets/custom/suit-girl-2.png', locked: false },
+        { id: 3, img: 'assets/custom/suit-girl-3.png', locked: false }
+      ]
+    },
     accessories: [
-      { id: 1, name: 'Gorra Rasti', img: 'assets/custom/acc-1.png', locked: false, type: 'accesorio' },
-      { id: 2, name: 'Sombrero Safari', img: 'assets/custom/acc-2.png', locked: true, cost: 15, type: 'accesorio' },
-      { id: 3, name: 'Visor Espacial', img: 'assets/custom/acc-3.png', locked: true, cost: 15, type: 'accesorio' },
-      { id: 4, name: 'Auriculares Gamer', img: 'assets/custom/acc-4.png', locked: false, type: 'accesorio' },
-      { id: 6, name: 'Cuello Aventurero', img: 'assets/custom/acc-6.png', locked: true, cost: 10, type: 'accesorio' }
-    ],
-    backpacks: [
-      { id: 5, name: 'Mochila Explorador', img: 'assets/custom/acc-5.png', locked: false, desc: 'Llevá tus bloques a todas partes', color: '#0051ba' },
-      { id: 101, name: 'Jetpack Espacial', img: 'assets/ui/isotipo-rasti.png', locked: false, desc: 'Propulsión con bloques Rasti', color: '#80298f' },
-      { id: 102, name: 'Mochila Kit 400', img: 'assets/ui/icon-gift.png', locked: false, desc: 'Capacidad para 400 piezas', color: '#ed1d24' },
-      { id: 103, name: 'Tanque Submarino', img: 'assets/ui/icon-compass.png', locked: true, cost: 20, desc: 'Oxígeno para bucear en corales', color: '#00adef' }
+      { id: 1, img: 'assets/custom/acc-1.png', locked: false },
+      { id: 2, img: 'assets/custom/acc-2.png', locked: false },
+      { id: 3, img: 'assets/custom/acc-3.png', locked: false },
+      { id: 4, img: 'assets/custom/acc-4.png', locked: false },
+      { id: 5, img: 'assets/custom/acc-5.png', locked: false },
+      { id: 6, img: 'assets/custom/acc-6.png', locked: false }
     ]
   },
 
