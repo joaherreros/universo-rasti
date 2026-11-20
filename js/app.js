@@ -290,6 +290,10 @@ const RastiApp = (() => {
   }
 
   function openFamiliaFromInicio() {
+    if (RASTI_DATA.user.ageGroup === '4-6') {
+      openModoAventuraFromInicio();
+      return;
+    }
     navigate('modos');
     switchModosView('familia');
   }
@@ -300,12 +304,19 @@ const RastiApp = (() => {
   function updateTopHud() {
     const u = RASTI_DATA.user;
     const profile = RASTI_DATA.profiles.find(p => p.id === u.avatarId) || RASTI_DATA.profiles[0];
+    const isYoung = u.ageGroup === '4-6';
+
+    document.body.classList.toggle('age-mode-4-6', isYoung);
+
+    if (isYoung && state.modosView === 'familia') {
+      switchModosView('islands');
+    }
 
     document.getElementById('hud-avatar-img').src = profile.img;
     document.getElementById('hud-username').textContent = u.username;
-    const exactAge = u.age || (u.ageGroup === '4-6' ? 5 : 8);
+    const exactAge = u.age || (isYoung ? 5 : 8);
     document.getElementById('hud-user-sub').textContent =
-      `⭐ Nivel ${u.level} • ${exactAge} años${u.ageGroup === '4-6' ? ' 🔊' : ''}`;
+      `⭐ Nivel ${u.level} • ${exactAge} años${isYoung ? ' 🔊' : ''}`;
     document.getElementById('hud-stars-count').textContent = u.stars;
 
     const welcomeName = document.getElementById('inicio-welcome-name');
@@ -313,7 +324,7 @@ const RastiApp = (() => {
 
     const welcomeMsg = document.getElementById('inicio-welcome-msg');
     if (welcomeMsg) {
-      welcomeMsg.textContent = u.ageGroup === '4-6'
+      welcomeMsg.textContent = isYoung
         ? '¡Tocá 🔊 para escuchar y elegí tu aventura!'
         : '¡Elegí tu aventura para empezar a construir!';
     }
@@ -322,13 +333,18 @@ const RastiApp = (() => {
   function setAgeGroup(ageGroup) {
     playTone('pop');
     RASTI_DATA.user.ageGroup = ageGroup;
+    if (ageGroup === '4-6' && (!RASTI_DATA.user.age || RASTI_DATA.user.age > 6)) {
+      RASTI_DATA.user.age = 5;
+    } else if (ageGroup === '7-10' && (!RASTI_DATA.user.age || RASTI_DATA.user.age <= 6)) {
+      RASTI_DATA.user.age = 8;
+    }
     document.getElementById('btn-age-7-10')?.classList.toggle('active', ageGroup === '7-10');
     document.getElementById('btn-age-4-6')?.classList.toggle('active', ageGroup === '4-6');
     updateTopHud();
     if (ageGroup === '4-6') {
-      showToast('Modo 4 a 6 años: Voz argentina activada 🔊', '👶');
+      showToast('Modo 4 a 6 años: Voz argentina activada y comunidad oculta 🔒', '👶');
     } else {
-      showToast('Modo 7 a 10 años: Desafíos de construcción 🚀', '🧒');
+      showToast('Modo 7 a 10 años: Desafíos + Familia Rasti habilitada 🚀', '🧒');
     }
   }
 
@@ -721,7 +737,8 @@ const RastiApp = (() => {
 
   function switchModosView(viewName) {
     playTone('click');
-    const validView = viewName === 'familia' ? 'familia' : 'islands';
+    const isYoung = RASTI_DATA.user.ageGroup === '4-6';
+    const validView = (!isYoung && viewName === 'familia') ? 'familia' : 'islands';
     state.modosView = validView;
 
     document.getElementById('tab-modos-islands')?.classList.toggle('active', validView === 'islands');
@@ -1307,17 +1324,19 @@ const RastiApp = (() => {
   function openNotificationsModal() {
     playTone('pop');
     document.getElementById('hud-notif-dot').style.display = 'none';
+    const isYoung = RASTI_DATA.user.ageGroup === '4-6';
     const html = `
       <h2 style="font-family:var(--font-title);font-size:1.45rem;color:var(--rasti-navy);margin-bottom:10px;">
         🔔 NOVEDADES
       </h2>
       <div style="display:flex;flex-direction:column;gap:8px;">
+        ${!isYoung ? `
         <div style="background:#fff;border:2px solid #86efac;border-radius:16px;padding:10px 14px;display:flex;align-items:center;gap:12px;">
           <span style="font-size:1.6rem;">🛡️</span>
           <div style="font-family:var(--font-btn);font-weight:700;font-size:0.9rem;color:var(--rasti-navy);">
             ¡Tu Castillo Real fue aprobado en Familia Rasti!
           </div>
-        </div>
+        </div>` : ''}
         <div style="background:#fff;border:2px solid #fde047;border-radius:16px;padding:10px 14px;display:flex;align-items:center;gap:12px;">
           <span style="font-size:1.6rem;">🎁</span>
           <div style="font-family:var(--font-btn);font-weight:700;font-size:0.9rem;color:var(--rasti-navy);">

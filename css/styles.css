@@ -3347,3 +3347,91 @@ body.fullscreen-mode .app-viewport {
   transform: scaleX(-1);
   background: #0f172a;
 }
+
+/* ==========================================================================
+   MODO 4 A 6 AÑOS: OCULTAR SECCIÓN COMUNIDAD / FAMILIA RASTI (+6)
+   ========================================================================== */
+body.age-mode-4-6 .hero-portal-card.familia-card,
+body.age-mode-4-6 #tab-modos-familia,
+body.age-mode-4-6 #modos-view-familia,
+body.age-mode-4-6 .modos-compact-switcher-wrap {
+  display: none !important;
+}
+
+body.age-mode-4-6 .inicio-hero-cards {
+  grid-template-columns: minmax(250px, 340px);
+}
+
+/* ==========================================================================
+   ADAPTACIÓN RESPONSIVA MÓVIL Y TABLET VERTICAL
+   ========================================================================== */
+@media (max-width: 900px) {
+  .kid-logros-top {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .kid-level-card {
+    grid-column: 1 / -1;
+  }
+  .kid-reward-chest-btn {
+    grid-column: 1 / -1;
+    min-height: 54px;
+  }
+  .kid-medals-row {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .onb-avatar-picker-layout {
+    grid-template-columns: 1fr;
+  }
+  .level-nodes-path {
+    overflow-x: auto;
+    gap: 14px;
+    padding-bottom: 18px;
+  }
+  .level-visual-action-card {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  .level-build-preview-box {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .onboarding-overlay {
+    padding: 8px;
+    align-items: flex-start;
+    overflow-y: auto;
+  }
+  .onboarding-card {
+    width: 100%;
+    padding: 14px;
+    border-radius: 22px;
+    margin: auto 0;
+  }
+  .onboarding-header {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .onb-avatars-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .onb-footer {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .kid-logros-top {
+    grid-template-columns: 1fr;
+  }
+  .kid-medals-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .visual-world-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  .visual-world-title-group {
+    flex-direction: column;
+  }
+}
