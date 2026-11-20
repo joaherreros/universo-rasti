@@ -40,6 +40,7 @@
   margin: 0;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 html, body {
@@ -50,6 +51,10 @@ html, body {
   color: var(--rasti-navy);
   overflow-x: hidden;
   user-select: none;
+  -webkit-user-select: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overscroll-behavior: none;
 }
 
 body::before {
@@ -2429,8 +2434,12 @@ body.fullscreen-mode .app-viewport {
 }
 
 /* ==========================================================================
-   MODO APAISADO (LANDSCAPE) FORZADO EN MÓVIL Y PANTALLAS COMPACTAS
+   MODO APAISADO (LANDSCAPE) FORZADO EN MÓVIL CON TIPOGRAFÍA MÁS GRANDE
    ========================================================================== */
+html.mobile-landscape-html {
+  font-size: 18.5px;
+}
+
 body.mobile-forced-landscape {
   overflow: hidden !important;
   position: fixed;
@@ -2439,6 +2448,7 @@ body.mobile-forced-landscape {
   height: 100vh;
   height: 100dvh;
   background: #001747;
+  touch-action: none;
 }
 
 body.mobile-forced-landscape .app-stage-wrapper {
@@ -2472,6 +2482,194 @@ body.mobile-forced-landscape .app-viewport {
   border-radius: 0 !important;
   width: 100% !important;
   height: 100% !important;
+}
+
+/* Ajustes de legibilidad y proporción en móvil apaisado (virtualH = 560px) */
+body.mobile-forced-landscape .top-hud {
+  padding: 6px 16px 4px;
+}
+
+body.mobile-forced-landscape .hud-center-logo img {
+  height: 48px;
+}
+
+body.mobile-forced-landscape .hud-username {
+  font-size: 1rem;
+}
+
+body.mobile-forced-landscape .hud-user-sub {
+  font-size: 0.82rem;
+}
+
+body.mobile-forced-landscape .bottom-nav-wrap {
+  bottom: 6px;
+}
+
+body.mobile-forced-landscape .bottom-nav {
+  padding: 4px 18px 5px;
+  width: min(760px, 92%);
+}
+
+body.mobile-forced-landscape .nav-tab-icon {
+  width: 34px;
+  height: 30px;
+}
+
+body.mobile-forced-landscape .nav-tab-label {
+  font-size: 0.92rem;
+}
+
+body.mobile-forced-landscape .app-screen {
+  padding: 60px 18px 68px;
+  touch-action: pan-y;
+}
+
+body.mobile-forced-landscape .welcome-speech-card {
+  max-width: 430px;
+  padding: 7px 14px;
+}
+
+body.mobile-forced-landscape .welcome-text-block h2 {
+  font-size: 1.05rem;
+}
+
+body.mobile-forced-landscape .welcome-text-block p {
+  font-size: 0.86rem;
+}
+
+body.mobile-forced-landscape .inicio-hero-cards {
+  grid-template-columns: repeat(2, minmax(210px, 275px));
+  gap: 18px;
+  margin-bottom: 2px;
+}
+
+body.mobile-forced-landscape.age-mode-4-6 .inicio-hero-cards {
+  grid-template-columns: minmax(230px, 300px);
+}
+
+body.mobile-forced-landscape .portal-pill-tag,
+body.mobile-forced-landscape .portal-enter-cta {
+  font-size: 0.84rem;
+  padding: 4px 12px;
+}
+
+body.mobile-forced-landscape .floating-islands-map {
+  gap: 6px 22px;
+  padding: 2px 10px;
+}
+
+body.mobile-forced-landscape .island-art-img {
+  width: 215px;
+  height: 130px;
+}
+
+body.mobile-forced-landscape .island-info-pill {
+  font-size: 0.84rem;
+  padding: 4px 12px;
+}
+
+body.mobile-forced-landscape .modos-switch-btn {
+  font-size: 0.92rem;
+  padding: 6px 16px;
+}
+
+body.mobile-forced-landscape .custom-main-grid {
+  grid-template-columns: 260px 1fr;
+  gap: 10px;
+  height: calc(100% - 46px);
+}
+
+body.mobile-forced-landscape .custom-options-panel {
+  overflow-y: auto;
+  touch-action: pan-y;
+}
+
+body.mobile-forced-landscape .cat-tab-btn {
+  font-size: 0.82rem;
+  padding: 6px 10px;
+}
+
+body.mobile-forced-landscape .custom-box-label {
+  font-size: 0.84rem;
+}
+
+body.mobile-forced-landscape .kid-logros-top {
+  gap: 8px;
+}
+
+body.mobile-forced-landscape .kid-level-card,
+body.mobile-forced-landscape .kid-kpi-pill {
+  padding: 7px 12px;
+}
+
+body.mobile-forced-landscape .kid-kpi-lbl {
+  font-size: 0.86rem;
+}
+
+body.mobile-forced-landscape .kid-logros-box {
+  padding: 8px 14px;
+  gap: 6px;
+}
+
+body.mobile-forced-landscape .kid-medal-circle {
+  width: 46px;
+  height: 46px;
+  font-size: 1.5rem;
+}
+
+body.mobile-forced-landscape .kid-medal-name {
+  font-size: 0.82rem;
+}
+
+body.mobile-forced-landscape .onboarding-overlay {
+  padding: 8px;
+}
+
+body.mobile-forced-landscape .onboarding-card {
+  padding: 10px 18px 12px;
+  gap: 7px;
+  max-height: 96%;
+  touch-action: pan-y;
+}
+
+body.mobile-forced-landscape .onboarding-logo {
+  height: 42px;
+}
+
+body.mobile-forced-landscape .onb-title {
+  font-size: 1.3rem;
+}
+
+body.mobile-forced-landscape .onb-subtitle {
+  font-size: 0.88rem;
+}
+
+body.mobile-forced-landscape .onb-form-group {
+  padding: 8px 14px;
+}
+
+body.mobile-forced-landscape .onb-label {
+  font-size: 0.86rem;
+  margin-bottom: 5px;
+}
+
+body.mobile-forced-landscape .onb-age-num-btn {
+  width: 44px;
+  height: 44px;
+  font-size: 1.25rem;
+}
+
+body.mobile-forced-landscape .onb-age-mode-hint {
+  font-size: 0.86rem;
+  padding: 6px 12px;
+  margin-top: 6px;
+}
+
+body.mobile-forced-landscape .modal-window {
+  max-height: 94%;
+  padding: 12px 18px;
+  overflow-y: auto;
+  touch-action: pan-y;
 }
 
 

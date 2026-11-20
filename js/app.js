@@ -1412,8 +1412,36 @@ const RastiApp = (() => {
   }
 
   // ==========================================================================
-  // MODO APAISADO (LANDSCAPE) FORZADO EN MÓVILES Y PANTALLAS COMPACTAS
+  // MODO APAISADO (LANDSCAPE) FORZADO EN MÓVILES Y BLOQUEO DE ZOOM
   // ==========================================================================
+  function preventMobileZoom() {
+    // Bloquear gestos de pellizco (pinch-to-zoom) en iOS Safari y Android
+    document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive: false });
+    document.addEventListener('gesturechange', (e) => e.preventDefault(), { passive: false });
+    document.addEventListener('gestureend', (e) => e.preventDefault(), { passive: false });
+
+    document.addEventListener('touchmove', (e) => {
+      if (e.touches && e.touches.length > 1) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', (e) => {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 300) {
+        e.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, { passive: false });
+
+    document.addEventListener('wheel', (e) => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+  }
+
   function syncMobileLandscapeViewport() {
     const tablet = document.getElementById('tablet-frame');
     if (!tablet) return;
@@ -1426,16 +1454,18 @@ const RastiApp = (() => {
     const isCompactOrMobile = isPortrait || isTouch || w < 1200 || h < 760;
 
     if (isCompactOrMobile) {
+      document.documentElement.classList.add('mobile-landscape-html');
       document.body.classList.add('mobile-forced-landscape');
 
       const landW = isPortrait ? h : w;
       const landH = isPortrait ? w : h;
       const aspect = landW / Math.max(1, landH);
 
-      let virtualH = 720;
+      // Lienzo virtual más compacto (560px de alto) para que los textos y botones se vean grandes en móvil
+      let virtualH = 560;
       let virtualW = Math.round(virtualH * aspect);
-      if (virtualW < 1160) {
-        virtualW = 1160;
+      if (virtualW < 960) {
+        virtualW = 960;
         virtualH = Math.round(virtualW / aspect);
       }
 
@@ -1449,6 +1479,7 @@ const RastiApp = (() => {
         ? `translate(-50%, -50%) rotate(90deg) scale(${scale})`
         : `translate(-50%, -50%) scale(${scale})`;
     } else {
+      document.documentElement.classList.remove('mobile-landscape-html');
       document.body.classList.remove('mobile-forced-landscape');
       tablet.style.width = '';
       tablet.style.height = '';
@@ -1459,6 +1490,7 @@ const RastiApp = (() => {
   }
 
   function init() {
+    preventMobileZoom();
     syncMobileLandscapeViewport();
     updateTopHud();
     renderPersonalizacion();
