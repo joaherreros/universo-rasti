@@ -54,38 +54,52 @@
         </div>
 
         <!-- ================================================================
-             SIMULADOR DE CREACIÓN DE CUENTA (ONBOARDING AL INICIAR)
+             SIMULADOR DE CREACIÓN DE CUENTA (EXCLUSIVO ADULTO RESPONSABLE)
              ================================================================ -->
-        <div class="onboarding-overlay" id="onboarding-overlay" aria-label="Creación de cuenta">
+        <div class="onboarding-overlay" id="onboarding-overlay" aria-label="Creación de cuenta por adulto responsable">
           <div class="onboarding-card">
             <!-- Encabezado con Logo -->
             <div class="onboarding-header">
               <img src="assets/ui/logo-universo-rasti.png" alt="Universo Rasti" class="onboarding-logo" />
               <div class="onboarding-steps-pills">
-                <span class="step-dot active" id="onb-dot-1">1. Tu Perfil</span>
-                <span class="step-dot" id="onb-dot-2">2. Adulto y Kit</span>
-                <span class="step-dot" id="onb-dot-3">3. Tu Avatar</span>
+                <span class="step-dot active" id="onb-dot-1">1. Adulto Responsable</span>
+                <span class="step-dot" id="onb-dot-2">2. Permisos y Kit QR</span>
+                <span class="step-dot" id="onb-dot-3">3. Avatar del Niño/a</span>
               </div>
             </div>
 
-            <!-- PASO 1: Nombre y Edad -->
+            <!-- PASO 1: Restricción Parental, Edad y Usuario Autogenerado -->
             <div class="onboarding-step active" id="onb-step-1">
-              <h2 class="onb-title">¡BIENVENIDO A UNIVERSO RASTI! 👋</h2>
-              <p class="onb-subtitle">Contanos cómo te llamás y cuántos años tenés para preparar tu aventura</p>
+              <div style="background:#fef3c7;border:2px solid #f59e0b;border-radius:16px;padding:7px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+                <div style="font-family:var(--font-btn);font-size:0.8rem;color:#78350f;">
+                  🔒 <strong>ZONA EXCLUSIVA PARA PADRES:</strong> La cuenta debe ser creada por un adulto responsable. Se recomienda su supervisión y acompañamiento.
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;font-family:var(--font-btn);font-weight:700;font-size:0.8rem;color:var(--rasti-navy);">
+                  <span>Verificación adulto (7 × 4):</span>
+                  <button type="button" class="onb-gate-btn" data-ans="21" onclick="RastiApp.verifyOnboardingParent(21)">21</button>
+                  <button type="button" class="onb-gate-btn" data-ans="28" id="onb-gate-correct" onclick="RastiApp.verifyOnboardingParent(28)">28</button>
+                  <button type="button" class="onb-gate-btn" data-ans="35" onclick="RastiApp.verifyOnboardingParent(35)">35</button>
+                  <span id="onb-gate-status" style="color:#b45309;">⏳ Pendiente</span>
+                </div>
+              </div>
 
               <div class="onb-form-group">
-                <label class="onb-label" for="onb-input-name">¿CÓMO TE LLAMÁS?</label>
+                <label class="onb-label">USUARIO SEGURO AUTOGENERADO (SIN DATOS PERSONALES)</label>
                 <div class="onb-name-row">
-                  <input type="text" id="onb-input-name" class="onb-text-input" value="Leo" maxlength="18" placeholder="Escribí tu nombre..." oninput="RastiApp.updateOnboardingName(this.value)" />
-                  <div class="onb-safe-alias">
-                    <span>🔒 Alias seguro: <strong id="onb-alias-preview">@Lordlyburrito71</strong></span>
-                    <button type="button" class="onb-mini-btn" onclick="RastiApp.rollOnboardingAlias()" title="Cambiar alias">🎲</button>
+                  <div class="onb-safe-alias" style="flex:1;justify-content:space-between;">
+                    <span>🛡️ Usuario asignado: <strong id="onb-alias-preview" style="font-size:1rem;color:var(--rasti-blue);">@Lordlyburrito71</strong></span>
+                    <button type="button" class="btn-rasti btn-rasti-yellow" style="padding:5px 12px;font-size:0.76rem;" onclick="RastiApp.rollOnboardingAlias()">
+                      🎲 GENERAR OTRO
+                    </button>
+                  </div>
+                  <div style="font-family:var(--font-btn);font-size:0.74rem;color:#475569;">
+                    Generado por combinaciones predefinidas para proteger la privacidad infantil.
                   </div>
                 </div>
               </div>
 
               <div class="onb-form-group">
-                <label class="onb-label" for="onb-input-age">¿CUÁNTOS AÑOS TENÉS?</label>
+                <label class="onb-label" for="onb-input-age">EDAD DEL NIÑO/A (CONFIGURA INTERFAZ Y DIFICULTAD)</label>
                 <div class="onb-exact-age-wrap">
                   <div class="onb-age-numbers-row" id="onb-age-numbers-row">
                     <button type="button" class="onb-age-num-btn" data-age="4" onclick="RastiApp.selectExactAge(4)">4</button>
@@ -103,43 +117,54 @@
                   </div>
                 </div>
                 <div class="onb-age-mode-hint" id="onb-age-mode-hint">
-                  🧒🚀 <strong>8 años:</strong> Desafíos de construcción + Comunidad Segura Familia Rasti habilitada
+                  🧒🚀 <strong>8 años:</strong> Desafíos de construcción + Comunidad Segura Familia Rasti (+6 años)
                 </div>
               </div>
 
               <div class="onb-footer">
                 <button type="button" class="btn-rasti btn-rasti-primary" onclick="RastiApp.goOnboardingStep(2)">
-                  SIGUIENTE PASO →
+                  SIGUIENTE: PERMISOS PARENTALES →
                 </button>
               </div>
             </div>
 
-            <!-- PASO 2: Control Parental y Kit QR -->
+            <!-- PASO 2: Consentimiento Parental, Publicaciones y Kit QR -->
             <div class="onboarding-step" id="onb-step-2">
-              <h2 class="onb-title">🛡️ ADULTO RESPONSABLE Y KIT RASTI</h2>
-              <p class="onb-subtitle">Configuración rápida de seguridad para que los chicos jueguen protegidos</p>
+              <h2 class="onb-title">🛡️ CONSENTIMIENTO PARENTAL Y KIT RASTI</h2>
+              <p class="onb-subtitle">El adulto otorga su consentimiento y controla las publicaciones en la comunidad</p>
 
               <div class="onb-parental-grid">
                 <div class="onb-parental-box">
                   <div class="onb-parental-icon">👨‍👩‍👧‍👦</div>
                   <div class="onb-parental-info">
-                    <h3>Supervisión y Comunidad Segura</h3>
-                    <p>Habilitar galería <strong>Familia Rasti (+6 años)</strong>: sin chat, sin datos personales, con filtro IA y moderador humano.</p>
+                    <h3>Consentimiento para Comunidad «Familia Rasti» (+6 años)</h3>
+                    <p>Autorizar acceso a la galería segura (sin comentarios ni chat directo entre usuarios).</p>
                   </div>
                   <button type="button" class="onb-toggle-btn active" id="onb-parental-toggle" onclick="RastiApp.toggleOnboardingParental()">
+                    ✓ AUTORIZADO
+                  </button>
+                </div>
+
+                <div class="onb-parental-box">
+                  <div class="onb-parental-icon">📷</div>
+                  <div class="onb-parental-info">
+                    <h3>Habilitar / Deshabilitar Publicaciones</h3>
+                    <p>Permitir enviar fotos de construcciones con bloques (pasan por filtro automático IA + moderador humano).</p>
+                  </div>
+                  <button type="button" class="onb-toggle-btn active" id="onb-publishing-toggle" onclick="RastiApp.toggleOnboardingPublishing()">
                     ✓ HABILITADO
                   </button>
                 </div>
 
                 <div class="onb-parental-box">
                   <div class="onb-parental-icon">
-                    <img src="assets/ui/isotipo-rasti.png" alt="Bloque" style="width:42px;height:42px;object-fit:contain;" />
+                    <img src="assets/ui/isotipo-rasti.png" alt="Bloque" style="width:40px;height:40px;object-fit:contain;" />
                   </div>
                   <div class="onb-parental-info">
-                    <h3>Kit Físico de 400 Bloques Rasti</h3>
-                    <p>Código QR dentro de la caja verificado para desbloquear todos los mundos y el escáner.</p>
+                    <h3>Código QR dentro de la Caja (Kit 400 Bloques Rasti)</h3>
+                    <p>Vincula el kit físico para acceder a las funcionalidades y al reconocimiento visual.</p>
                   </div>
-                  <span class="onb-qr-badge">📦 QR ACTIVO ✓</span>
+                  <span class="onb-qr-badge">📦 QR VINCULADO ✓</span>
                 </div>
               </div>
 
@@ -148,7 +173,7 @@
                   ← ATRÁS
                 </button>
                 <button type="button" class="btn-rasti btn-rasti-primary" onclick="RastiApp.goOnboardingStep(3)">
-                  ELEGIR MI PERSONAJE →
+                  GUARDAR Y PASAR AL NIÑO/A →
                 </button>
               </div>
             </div>
@@ -253,18 +278,10 @@
             <div class="inicio-hero-cards">
               <div class="hero-portal-card" onclick="RastiApp.openModoAventuraFromInicio()">
                 <img class="portal-art" src="assets/ui/card-modo-aventura.png" alt="Modo Aventura" />
-                <div class="portal-card-overlay">
-                  <span class="portal-pill-tag">🏝️ 4 Mundos</span>
-                  <span class="portal-enter-cta">JUGAR →</span>
-                </div>
               </div>
 
               <div class="hero-portal-card familia-card" onclick="RastiApp.openFamiliaFromInicio()">
                 <img class="portal-art" src="assets/ui/card-familia-rasti.png" alt="Familia Rasti" />
-                <div class="portal-card-overlay">
-                  <span class="portal-pill-tag">❤️ Galería +6</span>
-                  <span class="portal-enter-cta">ENTRAR →</span>
-                </div>
               </div>
             </div>
 
@@ -438,7 +455,6 @@
                   <button type="button" class="familia-tab-btn active" data-ftab="todos" onclick="RastiApp.filterFamiliaTab('todos')">Galería</button>
                   <button type="button" class="familia-tab-btn" data-ftab="amigos" onclick="RastiApp.filterFamiliaTab('amigos')">Amigos</button>
                   <button type="button" class="familia-tab-btn" data-ftab="desafíos" onclick="RastiApp.filterFamiliaTab('desafíos')">Desafíos</button>
-                  <button type="button" class="familia-tab-btn" data-ftab="noticias" onclick="RastiApp.filterFamiliaTab('noticias')">Noticias</button>
                 </div>
 
                 <button type="button" class="btn-rasti btn-rasti-yellow" style="padding:7px 16px;font-size:0.84rem;" onclick="RastiApp.openShareCreationModal()">

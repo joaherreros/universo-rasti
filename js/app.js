@@ -172,12 +172,50 @@ const RastiApp = (() => {
   function openOnboarding(force = false) {
     if (force) playTone('pop');
     state.onboardingStep = 1;
+    state.parentVerified = false;
+    const statusEl = document.getElementById('onb-gate-status');
+    if (statusEl) {
+      statusEl.textContent = '⏳ Pendiente';
+      statusEl.style.color = '#b45309';
+    }
+    document.querySelectorAll('.onb-gate-btn').forEach(b => b.classList.remove('verified', 'wrong'));
     goOnboardingStep(1);
     renderOnboardingAvatars();
     document.getElementById('onboarding-overlay')?.classList.add('open');
   }
 
+  function verifyOnboardingParent(ans) {
+    document.querySelectorAll('.onb-gate-btn').forEach(btn => {
+      const val = parseInt(btn.dataset.ans, 10);
+      btn.classList.toggle('verified', val === 28 && ans === 28);
+      btn.classList.toggle('wrong', val === ans && ans !== 28);
+    });
+    const statusEl = document.getElementById('onb-gate-status');
+    if (ans === 28) {
+      state.parentVerified = true;
+      playTone('success');
+      if (statusEl) {
+        statusEl.textContent = '✅ Adulto verificado';
+        statusEl.style.color = '#15803d';
+      }
+      showToast('✅ Verificación de adulto completada.', '🛡️');
+    } else {
+      state.parentVerified = false;
+      playTone('click');
+      if (statusEl) {
+        statusEl.textContent = '❌ Incorrecto';
+        statusEl.style.color = '#dc2626';
+      }
+      showToast('🔒Acceso restringido: la cuenta debe ser creada por un adulto responsable (7 × 4 = 28).', '👨‍👩‍👧');
+    }
+  }
+
   function goOnboardingStep(stepNum) {
+    if (stepNum > 1 && !state.parentVerified) {
+      playTone('click');
+      showToast('🔒 Restringido para padres: verificá primero el acceso de adulto (7 × 4 = 28).', '👨‍👩‍👧');
+      return;
+    }
     playTone('click');
     state.onboardingStep = stepNum;
     for (let i = 1; i <= 3; i++) {
@@ -223,9 +261,9 @@ const RastiApp = (() => {
     const hintEl = document.getElementById('onb-age-mode-hint');
     if (hintEl) {
       if (num <= 6) {
-        hintEl.innerHTML = `👶🔊 <strong>${num} años:</strong> Figuras simples e instrucciones narradas por voz en español argentino`;
+        hintEl.innerHTML = `👶🔊 <strong>${num} años:</strong> Figuras simples narradas por voz • Comunidad Familia Rasti oculta por edad`;
       } else {
-        hintEl.innerHTML = `🧒🚀 <strong>${num} años:</strong> Desafíos de construcción + Comunidad Segura Familia Rasti habilitada`;
+        hintEl.innerHTML = `🧒🚀 <strong>${num} años:</strong> Desafíos de construcción + Comunidad Segura Familia Rasti (+6 años)`;
       }
     }
 
@@ -241,11 +279,22 @@ const RastiApp = (() => {
 
   function toggleOnboardingParental() {
     playTone('pop');
-    state.parentalConsent = !state.parentalConsent;
+    RASTI_DATA.user.parentalConsent = !RASTI_DATA.user.parentalConsent;
     const btn = document.getElementById('onb-parental-toggle');
     if (btn) {
-      btn.classList.toggle('active', state.parentalConsent);
-      btn.textContent = state.parentalConsent ? '✓ HABILITADO' : '🔒 DESHABILITADO';
+      btn.classList.toggle('active', RASTI_DATA.user.parentalConsent);
+      btn.textContent = RASTI_DATA.user.parentalConsent ? '✓ AUTORIZADO' : '🔒 NO AUTORIZADO';
+    }
+    updateTopHud();
+  }
+
+  function toggleOnboardingPublishing() {
+    playTone('pop');
+    RASTI_DATA.user.publishingEnabled = !RASTI_DATA.user.publishingEnabled;
+    const btn = document.getElementById('onb-publishing-toggle');
+    if (btn) {
+      btn.classList.toggle('active', RASTI_DATA.user.publishingEnabled);
+      btn.textContent = RASTI_DATA.user.publishingEnabled ? '✓ HABILITADO' : '🔒 DESHABILITADO';
     }
   }
 
@@ -290,7 +339,7 @@ const RastiApp = (() => {
   }
 
   function openFamiliaFromInicio() {
-    if (RASTI_DATA.user.ageGroup === '4-6') {
+    if (RASTI_DATA.user.ageGroup === '4-6' || !RASTI_DATA.user.parentalConsent) {
       openModoAventuraFromInicio();
       return;
     }
@@ -305,10 +354,11 @@ const RastiApp = (() => {
     const u = RASTI_DATA.user;
     const profile = RASTI_DATA.profiles.find(p => p.id === u.avatarId) || RASTI_DATA.profiles[0];
     const isYoung = u.ageGroup === '4-6';
+    const hideCommunity = isYoung || !u.parentalConsent;
 
-    document.body.classList.toggle('age-mode-4-6', isYoung);
+    document.body.classList.toggle('age-mode-4-6', hideCommunity);
 
-    if (isYoung && state.modosView === 'familia') {
+    if (hideCommunity && state.modosView === 'familia') {
       switchModosView('islands');
     }
 
@@ -715,20 +765,36 @@ const RastiApp = (() => {
   // ==========================================================================
   // SECCIÓN 3: MODOS (SOLO MODO AVENTURA Y FAMILIA RASTI)
   // ==========================================================================
+  function isReinoLevel1Completed() {
+    const reino = RASTI_DATA.worlds.find(w => w.id === 'reino');
+    const m1 = reino && reino.missions.find(m => m.num === 1);
+    return Boolean(m1 && m1.status === 'completed');
+  }
+
   function renderModos() {
-    // 1. Renderizar las 4 Islas Flotantes de Modo Aventura (Página 4 Pantalla 2)
+    // 1. Renderizar las 4 Islas Flotantes de Modo Aventura (Reino Perdido 1°)
     const islandsContainer = document.getElementById('modos-view-islands');
     if (islandsContainer) {
-      islandsContainer.innerHTML = RASTI_DATA.worlds.map(w => `
-        <div class="floating-island-node" onclick="RastiApp.openWorldModal('${w.id}')">
-          <img class="island-art-img" src="${w.badgeImg}" alt="${w.name}" />
-          <div class="island-info-pill">
-            <span class="stars-tag">⭐ ${w.starsEarned}/${w.totalStars}</span>
-            <span class="missions-tag">Nivel ${w.completedMissions}/${w.totalMissions}</span>
-            <span style="font-family:var(--font-btn);font-weight:700;font-size:0.78rem;color:var(--rasti-yellow);">JUGAR →</span>
+      const reinoDone = isReinoLevel1Completed();
+      islandsContainer.innerHTML = RASTI_DATA.worlds.map(w => {
+        const isWorldLocked = w.id !== 'reino' && !reinoDone;
+        return `
+          <div class="floating-island-node ${isWorldLocked ? 'island-locked' : ''}" onclick="RastiApp.openWorldModal('${w.id}')">
+            <img class="island-art-img" src="${w.badgeImg}" alt="${w.name}" style="${isWorldLocked ? 'filter:grayscale(0.35) brightness(0.88);' : ''}" />
+            <div class="island-info-pill">
+              ${isWorldLocked ? `
+                <span class="stars-tag">🔒 Bloqueado</span>
+                <span class="missions-tag">Nivel 0/${w.totalMissions}</span>
+                <span style="font-family:var(--font-btn);font-weight:700;font-size:0.78rem;color:#fca5a5;">VER →</span>
+              ` : `
+                <span class="stars-tag">⭐ ${w.starsEarned}/${w.totalStars}</span>
+                <span class="missions-tag">Nivel ${w.completedMissions}/${w.totalMissions}</span>
+                <span style="font-family:var(--font-btn);font-weight:700;font-size:0.78rem;color:var(--rasti-yellow);">JUGAR →</span>
+              `}
+            </div>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     // 2. Renderizar Galería Familia Rasti
@@ -929,26 +995,19 @@ const RastiApp = (() => {
     if (!w) return;
 
     state.selectedWorldId = w.id;
-    const currentMission = w.missions.find(m => m.status === 'current') || w.missions[w.missions.length - 1];
+    const currentMission = w.missions.find(m => m.status === 'current') || w.missions[0];
     const activeNum = selectedNum || currentMission.num;
     state.selectedMissionNum = activeNum;
 
     const chosenMission = w.missions.find(m => m.num === activeNum) || currentMission;
     const profile = RASTI_DATA.profiles.find(p => p.id === RASTI_DATA.user.avatarId) || RASTI_DATA.profiles[0];
 
-    // Imágenes variadas por misión para que el mapa sea bien visual
-    const buildImages = [
-      w.buildPreview,
-      'assets/builds/build-rocket.jpg',
-      'assets/builds/build-dino.jpg',
-      'assets/builds/build-castle.jpg',
-      'assets/builds/build-supercar.jpg',
-      'assets/builds/build-whale.jpg'
-    ];
-    const missionImg = chosenMission.num === 1 ? w.buildPreview : buildImages[(chosenMission.num - 1) % buildImages.length];
+    if (chosenMission.status === 'locked') {
+      showToast('🔒 Debes completar el nivel 1 de Reino Perdido para avanzar', '🏰');
+    }
 
     const html = `
-      <!-- Encabezado Visual de la Aventura -->
+      <!-- Encabezado Visual de la Aventura (Sin botón de Película) -->
       <div class="visual-world-header" style="background:${w.bgGradient};">
         <div class="visual-world-title-group">
           <img src="${w.badgeImg}" alt="${w.name}" />
@@ -965,9 +1024,6 @@ const RastiApp = (() => {
         <div style="display:flex;gap:8px;margin-right:42px;">
           <button type="button" class="btn-rasti btn-rasti-yellow" style="padding:8px 14px;font-size:0.82rem;" onclick="RastiApp.speakWorldStory('${w.id}')">
             🔊 ESCUCHAR
-          </button>
-          <button type="button" class="btn-rasti btn-rasti-white" style="padding:8px 14px;font-size:0.82rem;" onclick="RastiApp.openStoryMovieModal('${w.id}')">
-            🎬 PELÍCULA
           </button>
         </div>
       </div>
@@ -996,7 +1052,7 @@ const RastiApp = (() => {
         </div>
       </div>
 
-      <!-- TARJETA VISUAL DEL NIVEL SELECCIONADO (POCO TEXTO, IMAGEN Y BOTÓN CÁMARA GRANDE) -->
+      <!-- TARJETA VISUAL DEL NIVEL SELECCIONADO -->
       <div class="level-visual-action-card">
         <div class="level-build-preview-box">
           <img src="${w.buildPreview}" alt="${chosenMission.title}" />
@@ -1007,18 +1063,25 @@ const RastiApp = (() => {
             <h3 style="font-family:var(--font-title);font-size:1.35rem;color:var(--rasti-navy);margin-top:4px;">
               ${chosenMission.title}
             </h3>
-            <div style="display:flex;gap:10px;margin-top:4px;font-family:var(--font-btn);font-weight:700;font-size:0.84rem;color:var(--rasti-forest);">
-              <span>🧱 ${chosenMission.blocks} bloques</span>
-              <span>⭐ +${chosenMission.stars} estrellas</span>
-            </div>
+            ${chosenMission.status === 'locked' ? `
+              <div style="margin-top:4px;font-family:var(--font-btn);font-weight:700;font-size:0.86rem;color:var(--rasti-red);">
+                🔒 Debes completar el nivel 1 de Reino Perdido para avanzar
+              </div>
+            ` : `
+              <div style="display:flex;gap:10px;margin-top:4px;font-family:var(--font-btn);font-weight:700;font-size:0.84rem;color:var(--rasti-forest);">
+                <span>🧱 ${chosenMission.blocks} bloques</span>
+                <span>⭐ +${chosenMission.stars} estrellas</span>
+              </div>
+            `}
           </div>
         </div>
 
         <div>
           ${chosenMission.status === 'locked' ? `
-            <span class="btn-rasti btn-rasti-locked" style="padding:12px 22px;font-size:0.95rem;">
-              🔒 NIVEL BLOQUEADO
-            </span>
+            <button type="button" class="btn-rasti btn-rasti-primary" style="padding:11px 18px;font-size:0.88rem;"
+                    onclick="RastiApp.openWorldModal('reino', 1)">
+              🏰 IR A NIVEL 1 DE REINO PERDIDO →
+            </button>
           ` : `
             <button type="button" class="btn-rasti btn-rasti-build" style="padding:12px 24px;font-size:1rem;"
                     onclick="RastiApp.openScannerModal('${chosenMission.title}', '${w.name}', '${w.buildPreview}', ${chosenMission.stars})">
@@ -1135,6 +1198,33 @@ const RastiApp = (() => {
     stopWebcamStream();
     RASTI_DATA.user.stars += starsReward;
 
+    // Si completó el Nivel 1 de Reino Perdido (o la misión actual del mundo activo), avanzar progreso
+    const targetWorld = RASTI_DATA.worlds.find(w => w.name === worldName || w.id === state.selectedWorldId);
+    if (targetWorld) {
+      const mission = targetWorld.missions.find(m => m.title === buildTitle) ||
+                      targetWorld.missions.find(m => m.status === 'current');
+      if (mission && mission.status !== 'completed') {
+        mission.status = 'completed';
+        targetWorld.completedMissions = targetWorld.missions.filter(m => m.status === 'completed').length;
+        targetWorld.starsEarned = Math.min(targetWorld.totalStars, targetWorld.starsEarned + starsReward);
+        const nextMission = targetWorld.missions.find(m => m.num === mission.num + 1);
+        if (nextMission && nextMission.status === 'locked') {
+          nextMission.status = 'current';
+        }
+      }
+      // Si se acaba de completar el Nivel 1 de Reino Perdido, habilitar el Nivel 1 de los demás mundos
+      if (targetWorld.id === 'reino' && isReinoLevel1Completed()) {
+        RASTI_DATA.worlds.forEach(w => {
+          if (w.id !== 'reino') {
+            const firstM = w.missions.find(m => m.num === 1);
+            if (firstM && firstM.status === 'locked') {
+              firstM.status = 'current';
+            }
+          }
+        });
+      }
+    }
+
     const exists = RASTI_DATA.achievements.completedBuilds.some(b => b.name === buildTitle);
     if (!exists) {
       RASTI_DATA.achievements.completedBuilds.unshift({
@@ -1149,6 +1239,7 @@ const RastiApp = (() => {
     }
 
     updateTopHud();
+    renderModos();
     renderLogros();
     closeModal();
     playArgentineVoice('scan_success.mp3', '¡Excelente construcción! Se sumó a tu aventura y ganaste nuevas estrellas.');
@@ -1192,6 +1283,11 @@ const RastiApp = (() => {
   }
 
   function openShareCreationModal() {
+    if (!RASTI_DATA.user.publishingEnabled) {
+      playTone('click');
+      showToast('🔒 Las publicaciones están deshabilitadas por el adulto responsable en Control Parental.', '👨‍👩‍👧');
+      return;
+    }
     playTone('pop');
     stopWebcamStream();
 
@@ -1273,6 +1369,17 @@ const RastiApp = (() => {
   function submitCreationForModeration() {
     playTone('success');
     stopWebcamStream();
+    if (RASTI_DATA.user.sharedHistory) {
+      RASTI_DATA.user.sharedHistory.unshift({
+        id: Date.now(),
+        title: 'Mi Creación con Bloques Rasti',
+        world: 'Familia Rasti',
+        date: 'Hoy • Recién',
+        blocks: 40,
+        img: 'assets/builds/build-supercar.jpg',
+        status: 'En revisión de Moderador'
+      });
+    }
     closeModal();
     showToast('⏳ ¡Foto capturada y enviada! Un moderador la revisará antes de publicarla.', '🛡️');
   }
@@ -1348,40 +1455,153 @@ const RastiApp = (() => {
     openModal(html);
   }
 
-  function openSettingsModal() {
+  function openSettingsModal(skipGate = false) {
     playTone('pop');
     const u = RASTI_DATA.user;
-    const html = `
-      <h2 style="font-family:var(--font-title);font-size:1.45rem;color:var(--rasti-navy);margin-bottom:10px;">
-        ⚙️ CONFIGURACIÓN Y CONTROL PARENTAL
-      </h2>
 
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        <div style="background:#fff;border:2px solid #bae6fd;border-radius:16px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-          <div style="font-family:var(--font-btn);font-weight:700;font-size:0.9rem;color:var(--rasti-navy);">
-            Edad del Niño/a
+    // Restricción para padres (Verificación de Adulto Responsable según el documento)
+    if (!skipGate && !state.parentPanelUnlocked) {
+      const gateHtml = `
+        <div style="text-align:center;padding:8px 10px;">
+          <span style="background:#fef3c7;border:2px solid #f59e0b;color:#78350f;padding:5px 14px;border-radius:999px;font-family:var(--font-btn);font-size:0.8rem;font-weight:700;">
+            🔒 ACCESO RESTRINGIDO • SOLO PADRES / ADULTO RESPONSABLE
+          </span>
+          <h2 style="font-family:var(--font-title);font-size:1.55rem;color:var(--rasti-navy);margin-top:10px;">
+            VERIFICACIÓN PARENTAL
+          </h2>
+          <p style="font-family:var(--font-btn);font-size:0.9rem;color:#334155;max-width:460px;margin:6px auto 14px;">
+            El adulto tiene un rol de supervisión para gestionar permisos de comunidad, publicaciones y consultar el historial. Resolvé para continuar:
+          </p>
+          <div style="background:#fff;border:2.5px solid #bae6fd;border-radius:20px;padding:16px;max-width:380px;margin:0 auto 12px;">
+            <div style="font-family:var(--font-title);font-size:1.45rem;color:var(--rasti-navy);margin-bottom:12px;">
+              ¿Cuánto es 6 × 3?
+            </div>
+            <div style="display:flex;justify-content:center;gap:12px;">
+              <button type="button" class="btn-rasti btn-rasti-white" onclick="RastiApp.unlockParentalPanel(12)">12</button>
+              <button type="button" class="btn-rasti btn-rasti-primary" onclick="RastiApp.unlockParentalPanel(18)">18</button>
+              <button type="button" class="btn-rasti btn-rasti-white" onclick="RastiApp.unlockParentalPanel(24)">24</button>
+            </div>
           </div>
-          <div style="display:flex;gap:6px;">
-            <button type="button" class="btn-rasti ${u.ageGroup === '4-6' ? 'btn-rasti-yellow' : 'btn-rasti-white'}" style="padding:6px 12px;font-size:0.78rem;" onclick="RastiApp.setAgeGroup('4-6');RastiApp.openSettingsModal();">
-              👶 4 a 6 años 🔊
-            </button>
-            <button type="button" class="btn-rasti ${u.ageGroup === '7-10' ? 'btn-rasti-yellow' : 'btn-rasti-white'}" style="padding:6px 12px;font-size:0.78rem;" onclick="RastiApp.setAgeGroup('7-10');RastiApp.openSettingsModal();">
-              🧒 7 a 10 años
-            </button>
+        </div>
+      `;
+      openModal(gateHtml);
+      return;
+    }
+
+    const historyList = (u.sharedHistory || []).map(item => `
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:6px 10px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <img src="${item.img}" alt="${item.title}" style="width:44px;height:34px;border-radius:8px;object-fit:cover;border:1.5px solid #bae6fd;" />
+          <div>
+            <div style="font-family:var(--font-btn);font-weight:700;font-size:0.82rem;color:var(--rasti-navy);">${item.title}</div>
+            <div style="font-family:var(--font-btn);font-size:0.72rem;color:#64748b;">${item.date} • 🧱 ${item.blocks} bloques</div>
+          </div>
+        </div>
+        <span style="font-family:var(--font-btn);font-weight:700;font-size:0.72rem;padding:3px 9px;border-radius:999px;background:${item.status.includes('Aprobada') ? '#dcfce7' : '#fef9c3'};color:${item.status.includes('Aprobada') ? '#15803d' : '#854d0e'};">
+          ${item.status.includes('Aprobada') ? '✓ ' : '⏳ '}${item.status}
+        </span>
+      </div>
+    `).join('');
+
+    const html = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding-right:38px;">
+        <h2 style="font-family:var(--font-title);font-size:1.4rem;color:var(--rasti-navy);">
+          🛡️ PANEL DE CONTROL DEL ADULTO RESPONSABLE
+        </h2>
+        <span style="background:#dcfce7;color:#15803d;font-family:var(--font-btn);font-weight:700;font-size:0.75rem;padding:3px 10px;border-radius:999px;">
+          ✓ Adulto Verificado
+        </span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <!-- 1. Consentimiento Comunidad Familia Rasti -->
+        <div style="background:#fff;border:2px solid #bae6fd;border-radius:16px;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+          <div>
+            <div style="font-family:var(--font-btn);font-weight:700;font-size:0.88rem;color:var(--rasti-navy);">
+              👨‍👩‍👧 Consentimiento para Comunidad «Familia Rasti» (+6 años)
+            </div>
+            <div style="font-family:var(--font-btn);font-size:0.74rem;color:#475569;">
+              Autorizar participación del niño/a en la galería comunitaria segura.
+            </div>
+          </div>
+          <button type="button" class="onb-toggle-btn ${u.parentalConsent ? 'active' : ''}" onclick="RastiApp.toggleParentalConsentFromPanel()">
+            ${u.parentalConsent ? '✓ AUTORIZADO' : '🔒 BLOQUEADO'}
+          </button>
+        </div>
+
+        <!-- 2. Habilitar / Deshabilitar Publicaciones -->
+        <div style="background:#fff;border:2px solid #bae6fd;border-radius:16px;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+          <div>
+            <div style="font-family:var(--font-btn);font-weight:700;font-size:0.88rem;color:var(--rasti-navy);">
+              📷 Habilitar o Deshabilitar Publicaciones
+            </div>
+            <div style="font-family:var(--font-btn);font-size:0.74rem;color:#475569;">
+              Permitir que el niño/a envíe fotos de sus construcciones a revisión de moderador.
+            </div>
+          </div>
+          <button type="button" class="onb-toggle-btn ${u.publishingEnabled ? 'active' : ''}" onclick="RastiApp.togglePublishingFromPanel()">
+            ${u.publishingEnabled ? '✓ HABILITADO' : '🔒 DESHABILITADO'}
+          </button>
+        </div>
+
+        <!-- 3. Historial de Construcciones Compartidas -->
+        <div style="background:#fff;border:2px solid #bae6fd;border-radius:16px;padding:8px 14px;">
+          <div style="font-family:var(--font-btn);font-weight:700;font-size:0.86rem;color:var(--rasti-navy);margin-bottom:6px;">
+            📋 Historial de Construcciones Compartidas (${(u.sharedHistory || []).length})
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px;max-height:110px;overflow-y:auto;">
+            ${historyList}
           </div>
         </div>
 
-        <div style="background:#fff;border:2px solid #bae6fd;border-radius:16px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">
-          <div style="font-family:var(--font-btn);font-weight:700;font-size:0.9rem;color:var(--rasti-navy);">
-            ✨ Simulador de Creación de Cuenta (Onboarding)
+        <!-- 4. Edad configurada y Creador de Cuenta -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="background:#fff;border:2px solid #bae6fd;border-radius:16px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:6px;">
+            <span style="font-family:var(--font-btn);font-weight:700;font-size:0.82rem;color:var(--rasti-navy);">Edad:</span>
+            <div style="display:flex;gap:5px;">
+              <button type="button" class="btn-rasti ${u.ageGroup === '4-6' ? 'btn-rasti-yellow' : 'btn-rasti-white'}" style="padding:5px 10px;font-size:0.74rem;" onclick="RastiApp.setAgeGroup('4-6');RastiApp.openSettingsModal(true);">
+                👶 4-6
+              </button>
+              <button type="button" class="btn-rasti ${u.ageGroup === '7-10' ? 'btn-rasti-yellow' : 'btn-rasti-white'}" style="padding:5px 10px;font-size:0.74rem;" onclick="RastiApp.setAgeGroup('7-10');RastiApp.openSettingsModal(true);">
+                🧒 7-10
+              </button>
+            </div>
           </div>
-          <button type="button" class="btn-rasti btn-rasti-primary" style="padding:6px 14px;font-size:0.78rem;" onclick="RastiApp.closeModal();RastiApp.openOnboarding(true);">
-            ABRIR CREADOR DE CUENTA
-          </button>
+
+          <div style="background:#fff;border:2px solid #bae6fd;border-radius:16px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-family:var(--font-btn);font-weight:700;font-size:0.82rem;color:var(--rasti-navy);">Registro inicial:</span>
+            <button type="button" class="btn-rasti btn-rasti-primary" style="padding:5px 12px;font-size:0.74rem;" onclick="RastiApp.closeModal();RastiApp.openOnboarding(true);">
+              CREAR CUENTA
+            </button>
+          </div>
         </div>
       </div>
     `;
     openModal(html);
+  }
+
+  function unlockParentalPanel(ans) {
+    if (ans === 18) {
+      state.parentPanelUnlocked = true;
+      playTone('success');
+      openSettingsModal(true);
+    } else {
+      playTone('click');
+      showToast('🔒 Respuesta incorrecta. Panel exclusivo para padres (6 × 3 = 18).', '👨‍👩‍👧');
+    }
+  }
+
+  function toggleParentalConsentFromPanel() {
+    playTone('pop');
+    RASTI_DATA.user.parentalConsent = !RASTI_DATA.user.parentalConsent;
+    updateTopHud();
+    openSettingsModal(true);
+  }
+
+  function togglePublishingFromPanel() {
+    playTone('pop');
+    RASTI_DATA.user.publishingEnabled = !RASTI_DATA.user.publishingEnabled;
+    openSettingsModal(true);
   }
 
   // ==========================================================================
@@ -1457,27 +1677,51 @@ const RastiApp = (() => {
       document.documentElement.classList.add('mobile-landscape-html');
       document.body.classList.add('mobile-forced-landscape');
 
-      const landW = isPortrait ? h : w;
-      const landH = isPortrait ? w : h;
-      const aspect = landW / Math.max(1, landH);
-
-      // Lienzo virtual más compacto (560px de alto) para que los textos y botones se vean grandes en móvil
-      let virtualH = 560;
-      let virtualW = Math.round(virtualH * aspect);
-      if (virtualW < 960) {
-        virtualW = 960;
-        virtualH = Math.round(virtualW / aspect);
+      // Intentar bloquear la rotación del navegador en vertical ("portrait") donde está soportado
+      if (isTouch && screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('portrait-primary').catch(() => {});
       }
 
-      const scale = landW / virtualW;
+      // En móvil (isTouch), mantener SIEMPRE la orientación y proporción fija de "vertical" (rotate(90deg) sobre el eje largo del teléfono)
+      // para que al inclinar o girar el celular en la mano no cambie ni se achique la vista
+      const forceVerticalPhoneMode = isTouch || isPortrait;
 
-      tablet.style.width = `${virtualW}px`;
-      tablet.style.height = `${virtualH}px`;
-      tablet.style.left = `${w / 2}px`;
-      tablet.style.top = `${h / 2}px`;
-      tablet.style.transform = isPortrait
-        ? `translate(-50%, -50%) rotate(90deg) scale(${scale})`
-        : `translate(-50%, -50%) scale(${scale})`;
+      if (forceVerticalPhoneMode) {
+        const longSide = Math.max(w, h);
+        const shortSide = Math.min(w, h);
+        const aspect = Math.min(2.05, Math.max(1.72, longSide / Math.max(1, shortSide)));
+
+        const virtualH = 560;
+        const virtualW = Math.round(virtualH * aspect);
+
+        // Si el navegador sigue en vertical (w < h), rotamos 90deg para que quede acostado como se ve en vertical.
+        // Si el sistema operativo del teléfono rotó el navegador a horizontal (w > h), mantenemos exactamente el mismo virtualW x virtualH
+        const scale = isPortrait
+          ? Math.min(h / virtualW, w / virtualH)
+          : Math.min(w / virtualW, h / virtualH);
+
+        tablet.style.width = `${virtualW}px`;
+        tablet.style.height = `${virtualH}px`;
+        tablet.style.left = `${w / 2}px`;
+        tablet.style.top = `${h / 2}px`;
+        tablet.style.transform = isPortrait
+          ? `translate(-50%, -50%) rotate(90deg) scale(${scale})`
+          : `translate(-50%, -50%) scale(${scale})`;
+      } else {
+        const aspect = w / Math.max(1, h);
+        let virtualH = 560;
+        let virtualW = Math.round(virtualH * aspect);
+        if (virtualW < 960) {
+          virtualW = 960;
+          virtualH = Math.round(virtualW / aspect);
+        }
+        const scale = w / virtualW;
+        tablet.style.width = `${virtualW}px`;
+        tablet.style.height = `${virtualH}px`;
+        tablet.style.left = `${w / 2}px`;
+        tablet.style.top = `${h / 2}px`;
+        tablet.style.transform = `translate(-50%, -50%) scale(${scale})`;
+      }
     } else {
       document.documentElement.classList.remove('mobile-landscape-html');
       document.body.classList.remove('mobile-forced-landscape');
@@ -1523,12 +1767,14 @@ const RastiApp = (() => {
   return {
     navigate,
     openOnboarding,
+    verifyOnboardingParent,
     goOnboardingStep,
     updateOnboardingName,
     rollOnboardingAlias,
     selectExactAge,
     selectOnboardingAge,
     toggleOnboardingParental,
+    toggleOnboardingPublishing,
     selectOnboardingAvatar,
     syncOnboardingPreview,
     finishOnboarding,
@@ -1565,6 +1811,9 @@ const RastiApp = (() => {
     openMedalModal,
     openNotificationsModal,
     openSettingsModal,
+    unlockParentalPanel,
+    toggleParentalConsentFromPanel,
+    togglePublishingFromPanel,
     closeModal,
     closeModalOnBackdrop
   };
