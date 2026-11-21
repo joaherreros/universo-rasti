@@ -807,9 +807,16 @@ const RastiApp = (() => {
   function renderLogros() {
     const ach = RASTI_DATA.achievements;
     const u = RASTI_DATA.user;
+    const unlockedCount = ach.medals.filter(m => m.unlocked).length;
+    ach.summary.medalsUnlocked = unlockedCount;
+
+    const lvlBadge = document.getElementById('logros-level-badge');
+    if (lvlBadge) lvlBadge.textContent = `NIVEL ${u.level}`;
+    const bar = document.getElementById('logros-overall-bar');
+    if (bar) bar.style.width = `${Math.min(100, Math.round((u.stars / 100) * 100))}%`;
 
     document.getElementById('kpi-stars').textContent = u.stars;
-    document.getElementById('kpi-medals').textContent = `${ach.summary.medalsUnlocked}/${ach.summary.medalsTotal}`;
+    document.getElementById('kpi-medals').textContent = `${unlockedCount}/${ach.summary.medalsTotal}`;
     document.getElementById('kpi-builds').textContent = ach.completedBuilds.length;
 
     // 1. Medallas grandes y visuales (sin texto largo)
@@ -825,19 +832,27 @@ const RastiApp = (() => {
       `).join('');
     }
 
-    // 2. Construcciones completadas (Fotos limpias)
+    // 2. Construcciones completadas (Fotos limpias o estado inicial vacío)
     const buildsStrip = document.getElementById('logros-builds-strip');
     if (buildsStrip) {
-      buildsStrip.innerHTML = ach.completedBuilds.map(b => `
-        <div class="completed-build-card" onclick="RastiApp.openScannerModal('${b.name}', '${b.world}', '${b.img}', ${b.stars})">
-          <img src="${b.img}" alt="${b.name}" />
-          <div class="completed-build-name">${b.name}</div>
-          <div class="completed-build-tags">
-            <span>🧱 ${b.blocks}</span>
-            <span>⭐ +${b.stars}</span>
+      if (ach.completedBuilds.length === 0) {
+        buildsStrip.innerHTML = `
+          <div style="grid-column:1 / -1;background:#f0f9ff;border:2.5px dashed #7dd3fc;border-radius:18px;padding:16px;text-align:center;font-family:var(--font-btn);color:var(--rasti-navy);font-weight:700;font-size:0.9rem;">
+            🧱 Todavía no tenés construcciones escaneadas. ¡Completá el Nivel 1 de Reino Perdido para ganar tus primeras estrellas!
           </div>
-        </div>
-      `).join('');
+        `;
+      } else {
+        buildsStrip.innerHTML = ach.completedBuilds.map(b => `
+          <div class="completed-build-card" onclick="RastiApp.openScannerModal('${b.name}', '${b.world}', '${b.img}', ${b.stars})">
+            <img src="${b.img}" alt="${b.name}" />
+            <div class="completed-build-name">${b.name}</div>
+            <div class="completed-build-tags">
+              <span>🧱 ${b.blocks}</span>
+              <span>⭐ +${b.stars}</span>
+            </div>
+          </div>
+        `).join('');
+      }
     }
 
     const hasClaimable = ach.challenges.some(c => c.status === 'claimable');
@@ -849,8 +864,8 @@ const RastiApp = (() => {
         claimBtn.className = 'btn-rasti btn-rasti-yellow kid-reward-chest-btn';
         claimBtn.innerHTML = '<span style="font-size:1.5rem;">🎁</span><span>¡PREMIO +15 ⭐!</span>';
       } else {
-        claimBtn.className = 'btn-rasti btn-rasti-completed kid-reward-chest-btn';
-        claimBtn.innerHTML = '<span>✓ PREMIO RECIBIDO</span>';
+        claimBtn.className = 'btn-rasti btn-rasti-white kid-reward-chest-btn';
+        claimBtn.innerHTML = '<span style="font-size:1.3rem;">🎯</span><span>NIVEL 1 = +10 ⭐</span>';
       }
     }
   }
@@ -1198,6 +1213,18 @@ const RastiApp = (() => {
         stars: starsReward,
         precision: '98%'
       });
+    }
+
+    // Desbloquear primera medalla y cofre de premio al completar el primer escaneo
+    const firstMedal = RASTI_DATA.achievements.medals.find(m => m.id === 1);
+    if (firstMedal && !firstMedal.unlocked) {
+      firstMedal.unlocked = true;
+      firstMedal.date = 'Desbloqueada';
+    }
+    const firstChallenge = RASTI_DATA.achievements.challenges.find(c => c.id === 1);
+    if (firstChallenge && firstChallenge.status === 'in_progress') {
+      firstChallenge.progress = 1;
+      firstChallenge.status = 'claimable';
     }
 
     updateTopHud();
@@ -1713,54 +1740,36 @@ const RastiApp = (() => {
       document.documentElement.classList.add('mobile-landscape-html');
       document.body.classList.add('mobile-forced-landscape');
 
-      // Intentar bloquear la rotación del navegador en vertical ("portrait") donde está soportado
-      if (isTouch && screen.orientation && screen.orientation.lock) {
-        screen.orientation.lock('portrait-primary').catch(() => {});
+      const landW = isPortrait ? h : w;
+      const landH = isPortrait ? w : h;
+      const aspect = landW / Math.max(1, landH);
+
+      // Llenar el 100% de la pantalla (CERO márgenes azules a los costados tanto en vertical como en horizontal)
+      // Cuando el celular está horizontal y la barra del navegador reduce el alto (ej. 320px),
+      // bajamos virtualH a 460-550px para mantener el MISMO tamaño grande que en vertical sin encoger ni dejar bordes.
+      const targetScale = 0.69;
+      let virtualH = Math.max(460, Math.min(555, Math.round(landH / targetScale)));
+      let virtualW = Math.round(virtualH * aspect);
+
+      if (virtualW < 920) {
+        virtualW = 920;
+        virtualH = Math.round(virtualW / aspect);
       }
 
-      // En móvil (isTouch), mantener SIEMPRE la orientación y proporción fija de "vertical" (rotate(90deg) sobre el eje largo del teléfono)
-      // para que al inclinar o girar el celular en la mano no cambie ni se achique la vista
-      const forceVerticalPhoneMode = isTouch || isPortrait;
+      const scale = landH / virtualH;
+      document.body.classList.toggle('mobile-short-landscape', virtualH < 520);
 
-      if (forceVerticalPhoneMode) {
-        const longSide = Math.max(w, h);
-        const shortSide = Math.min(w, h);
-        const aspect = Math.min(2.05, Math.max(1.72, longSide / Math.max(1, shortSide)));
-
-        const virtualH = 560;
-        const virtualW = Math.round(virtualH * aspect);
-
-        // Si el navegador sigue en vertical (w < h), rotamos 90deg para que quede acostado como se ve en vertical.
-        // Si el sistema operativo del teléfono rotó el navegador a horizontal (w > h), mantenemos exactamente el mismo virtualW x virtualH
-        const scale = isPortrait
-          ? Math.min(h / virtualW, w / virtualH)
-          : Math.min(w / virtualW, h / virtualH);
-
-        tablet.style.width = `${virtualW}px`;
-        tablet.style.height = `${virtualH}px`;
-        tablet.style.left = `${w / 2}px`;
-        tablet.style.top = `${h / 2}px`;
-        tablet.style.transform = isPortrait
-          ? `translate(-50%, -50%) rotate(90deg) scale(${scale})`
-          : `translate(-50%, -50%) scale(${scale})`;
-      } else {
-        const aspect = w / Math.max(1, h);
-        let virtualH = 560;
-        let virtualW = Math.round(virtualH * aspect);
-        if (virtualW < 960) {
-          virtualW = 960;
-          virtualH = Math.round(virtualW / aspect);
-        }
-        const scale = w / virtualW;
-        tablet.style.width = `${virtualW}px`;
-        tablet.style.height = `${virtualH}px`;
-        tablet.style.left = `${w / 2}px`;
-        tablet.style.top = `${h / 2}px`;
-        tablet.style.transform = `translate(-50%, -50%) scale(${scale})`;
-      }
+      tablet.style.width = `${virtualW}px`;
+      tablet.style.height = `${virtualH}px`;
+      tablet.style.left = `${w / 2}px`;
+      tablet.style.top = `${h / 2}px`;
+      tablet.style.transform = isPortrait
+        ? `translate(-50%, -50%) rotate(90deg) scale(${scale})`
+        : `translate(-50%, -50%) scale(${scale})`;
     } else {
       document.documentElement.classList.remove('mobile-landscape-html');
       document.body.classList.remove('mobile-forced-landscape');
+      document.body.classList.remove('mobile-short-landscape');
       tablet.style.width = '';
       tablet.style.height = '';
       tablet.style.left = '';

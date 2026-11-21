@@ -2780,6 +2780,83 @@ body.mobile-forced-landscape .modal-window {
   touch-action: pan-y;
 }
 
+/* Ajuste compacto cuando el celular está en horizontal con barra del navegador (virtualH = 460-519px) */
+body.mobile-short-landscape .top-hud {
+  padding: 4px 14px 2px;
+}
+
+body.mobile-short-landscape .hud-center-logo img {
+  height: 40px;
+}
+
+body.mobile-short-landscape .hud-user-pill {
+  padding: 3px 12px 3px 4px;
+}
+
+body.mobile-short-landscape .hud-avatar-ring {
+  width: 34px;
+  height: 34px;
+}
+
+body.mobile-short-landscape .hud-icon-btn {
+  width: 34px;
+  height: 34px;
+  font-size: 1rem;
+}
+
+body.mobile-short-landscape .bottom-nav-wrap {
+  bottom: 4px;
+}
+
+body.mobile-short-landscape .bottom-nav {
+  padding: 3px 16px 4px;
+}
+
+body.mobile-short-landscape .nav-tab-icon {
+  width: 28px;
+  height: 24px;
+}
+
+body.mobile-short-landscape .nav-tab-label {
+  font-size: 0.82rem;
+}
+
+body.mobile-short-landscape .app-screen {
+  padding: 48px 16px 56px;
+}
+
+body.mobile-short-landscape .inicio-hero-cards {
+  grid-template-columns: repeat(2, minmax(175px, 225px));
+  gap: 16px;
+  margin-bottom: 2px;
+}
+
+body.mobile-short-landscape .island-art-img {
+  width: 185px;
+  height: 112px;
+}
+
+body.mobile-short-landscape .base-profile-btn.large-char-card {
+  height: 68px;
+}
+
+body.mobile-short-landscape .clothes-grid.large-clothes .item-thumb-btn img {
+  height: 34px;
+}
+
+body.mobile-short-landscape .suits-grid.large-suits .item-thumb-btn img {
+  height: 48px;
+}
+
+body.mobile-short-landscape .onboarding-card {
+  padding: 8px 16px 10px;
+  gap: 5px;
+}
+
+body.mobile-short-landscape .onboarding-logo {
+  height: 34px;
+}
+
 
 /* ==========================================================================
    SIMULADOR DE CREACIÓN DE CUENTA (ONBOARDING AL CARGAR POR PRIMERA VEZ)

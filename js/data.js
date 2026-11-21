@@ -9,10 +9,10 @@ window.RASTI_DATA = {
     displayName: 'Leo',
     age: 8,
     ageGroup: '7-10', // Calculado automáticamente según la edad (4-6 o 7-10)
-    level: 4,
-    levelTitle: 'Constructor Estelar',
-    stars: 120,
-    streakDays: 5,
+    level: 1,
+    levelTitle: 'Constructor Inicial',
+    stars: 0,
+    streakDays: 1,
     kitBlocks: 400,
     kitVerified: true,
     avatarId: 1,
@@ -29,10 +29,7 @@ window.RASTI_DATA = {
     parentEmail: '',
     parentalConsent: true,      // Consentimiento del adulto para participar en Familia Rasti
     publishingEnabled: true,    // Permiso del adulto para publicar fotos de construcciones
-    sharedHistory: [
-      { id: 101, title: 'Castillo Real Rasti', world: 'Reino Perdido', date: 'Ayer • 18:20', blocks: 48, img: 'assets/builds/build-castle.jpg', status: 'Aprobada por Moderador' },
-      { id: 102, title: 'Supercar Amarillo', world: 'Desafíos Rasti', date: 'Hace 3 días', blocks: 34, img: 'assets/builds/build-supercar.jpg', status: 'Aprobada por Moderador' }
-    ]
+    sharedHistory: []
   },
 
   // 10 Perfiles de niños/as oficiales (Sin mostrar nombres en la interfaz)
@@ -470,41 +467,34 @@ window.RASTI_DATA = {
     }
   ],
 
-  // Datos de la sección LOGROS (Medallas, Construcciones, Desafíos Superados, Progreso)
+  // Datos de la sección LOGROS (Inicia de cero, sin estrellas ni medallas desbloqueadas)
   achievements: {
     summary: {
-      starsTotal: 120,
-      starsGoal: 150,
-      medalsUnlocked: 6,
+      starsTotal: 0,
+      starsGoal: 100,
+      medalsUnlocked: 0,
       medalsTotal: 8,
-      buildsCompleted: 12,
-      worldsExplored: 4,
-      challengesPassed: 9,
-      overallProgress: 68
+      buildsCompleted: 0,
+      worldsExplored: 0,
+      challengesPassed: 0,
+      overallProgress: 0
     },
     medals: [
-      { id: 1, title: 'Primer Encastre', desc: 'Completaste y escaneaste tu primera construcción física Rasti.', icon: '🧱', color: '#ed1d24', unlocked: true, date: 'Desbloqueada' },
-      { id: 2, title: 'Piloto Galáctico', desc: 'Superaste 5 misiones en el mundo Estación Espacial.', icon: '🚀', color: '#80298f', unlocked: true, date: 'Desbloqueada' },
-      { id: 3, title: 'Explorador de la Isla', desc: 'Construiste el Dino T-Rex y el Puente de la Cascada.', icon: '🦖', color: '#047e48', unlocked: true, date: 'Desbloqueada' },
-      { id: 4, title: 'Arquitecto Real', desc: 'Levantaste las torres del Castillo en el Reino Perdido.', icon: '🏰', color: '#ffcb05', unlocked: true, date: 'Desbloqueada' },
-      { id: 5, title: 'Amigo de Familia Rasti', desc: 'Compartiste una creación aprobada por moderación y diste 10 ❤️.', icon: '💝', color: '#00adef', unlocked: true, date: 'Desbloqueada' },
-      { id: 6, title: 'Estilo Único', desc: 'Personalizaste tu avatar con ropa, peinado y mochila de aventura.', icon: '🎨', color: '#f5821f', unlocked: true, date: 'Desbloqueada' },
-      { id: 7, title: 'Capitán de los Mares', desc: 'Completá las 6 misiones de Expedición Submarina.', icon: '🐳', color: '#0051ba', unlocked: false, date: 'Faltan 5 misiones' },
-      { id: 8, title: 'Maestro 400 Bloques', desc: 'Usá las 400 piezas del kit físico en una mega construcción.', icon: '👑', color: '#ffe600', unlocked: false, date: '310 / 400 bloques' }
+      { id: 1, title: 'Primer Encastre', desc: 'Completá y escaneá tu primera construcción física Rasti.', icon: '🧱', color: '#ed1d24', unlocked: false, date: 'Bloqueada' },
+      { id: 2, title: 'Piloto Galáctico', desc: 'Superá las misiones en el mundo Estación Espacial.', icon: '🚀', color: '#80298f', unlocked: false, date: 'Bloqueada' },
+      { id: 3, title: 'Explorador de la Isla', desc: 'Construí el Dino T-Rex y el Puente de la Cascada.', icon: '🦖', color: '#047e48', unlocked: false, date: 'Bloqueada' },
+      { id: 4, title: 'Arquitecto Real', desc: 'Reconstruí el puente y las torres en el Reino Perdido.', icon: '🏰', color: '#ffcb05', unlocked: false, date: 'Bloqueada' },
+      { id: 5, title: 'Amigo de Familia Rasti', desc: 'Compartí una creación aprobada por moderación y da 10 ❤️.', icon: '💝', color: '#00adef', unlocked: false, date: 'Bloqueada' },
+      { id: 6, title: 'Estilo Único', desc: 'Desbloqueá tu primera prenda o traje en Personalización.', icon: '🎨', color: '#f5821f', unlocked: false, date: 'Bloqueada' },
+      { id: 7, title: 'Capitán de los Mares', desc: 'Completá las 6 misiones de Expedición Submarina.', icon: '🐳', color: '#0051ba', unlocked: false, date: 'Bloqueada' },
+      { id: 8, title: 'Maestro 400 Bloques', desc: 'Usá las 400 piezas del kit físico en una mega construcción.', icon: '👑', color: '#ffe600', unlocked: false, date: 'Bloqueada' }
     ],
-    completedBuilds: [
-      { id: 1, name: 'Cohete Explorador X-1', world: 'Estación Espacial', img: 'assets/builds/build-rocket.jpg', blocks: 28, stars: 10, precision: '98%' },
-      { id: 2, name: 'Castillo Real Rasti', world: 'Reino Perdido', img: 'assets/builds/build-castle.jpg', blocks: 65, stars: 15, precision: '96%' },
-      { id: 3, name: 'Amigo Dino T-Rex', world: 'Isla Misteriosa', img: 'assets/builds/build-dino.jpg', blocks: 38, stars: 10, precision: '97%' },
-      { id: 4, name: 'Supercar Amarillo', world: 'Desafíos Rasti', img: 'assets/builds/build-supercar.jpg', blocks: 54, stars: 15, precision: '95%' },
-      { id: 5, name: 'Refugio Casa del Árbol', world: 'Isla Misteriosa', img: 'assets/builds/build-treehouse.jpg', blocks: 48, stars: 10, precision: '99%' },
-      { id: 6, name: 'Gran Ballena Azul', world: 'Expedición Submarina', img: 'assets/builds/build-whale.jpg', blocks: 36, stars: 15, precision: '96%' }
-    ],
+    completedBuilds: [],
     challenges: [
-      { id: 1, title: 'Racha de Constructor: 5 días seguidos', progress: 5, total: 5, reward: 15, status: 'claimable', icon: '🔥' },
-      { id: 2, title: 'Escaneá 12 construcciones físicas con la cámara', progress: 12, total: 12, reward: 20, status: 'completed', icon: '📷' },
-      { id: 3, title: 'Explorá los 4 mundos de Modo Aventura', progress: 4, total: 4, reward: 25, status: 'completed', icon: '🗺️' },
-      { id: 4, title: 'Completá todas las misiones de Estación Espacial', progress: 5, total: 6, reward: 30, status: 'in_progress', icon: '🛸' }
+      { id: 1, title: 'Completá el Nivel 1 de Reino Perdido', progress: 0, total: 1, reward: 15, status: 'in_progress', icon: '🏰' },
+      { id: 2, title: 'Escaneá 5 construcciones físicas con la cámara', progress: 0, total: 5, reward: 20, status: 'in_progress', icon: '📷' },
+      { id: 3, title: 'Explorá los 4 mundos de Modo Aventura', progress: 0, total: 4, reward: 25, status: 'in_progress', icon: '🗺️' },
+      { id: 4, title: 'Completá todas las misiones de Estación Espacial', progress: 0, total: 6, reward: 30, status: 'in_progress', icon: '🛸' }
     ]
   }
 };
