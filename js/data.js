@@ -21,11 +21,12 @@ window.RASTI_DATA = {
     eyeColor: 1,
     hairStyle: 1,
     hairColor: 1,
-    topItem: 1,
-    bottomItem: 1,
+    topItem: null,
+    bottomItem: null,
     specialSuit: null,
     accessory: 1,
     backpack: 5,
+    parentEmail: '',
     parentalConsent: true,      // Consentimiento del adulto para participar en Familia Rasti
     publishingEnabled: true,    // Permiso del adulto para publicar fotos de construcciones
     sharedHistory: [
@@ -231,56 +232,56 @@ window.RASTI_DATA = {
     },
     tops: {
       boy: [
-        { id: 1, img: 'assets/custom/top-boy-1.png', locked: false },
-        { id: 2, img: 'assets/custom/top-boy-2.png', locked: false },
-        { id: 3, img: 'assets/custom/top-boy-3.png', locked: false },
-        { id: 4, img: 'assets/custom/top-boy-4.png', locked: false },
-        { id: 5, img: 'assets/custom/top-boy-5.png', locked: false },
-        { id: 6, img: 'assets/custom/top-boy-6.png', locked: false },
-        { id: 7, img: 'assets/custom/top-boy-7.png', locked: false }
+        { id: 1, img: 'assets/custom/top-boy-1.png', locked: true, cost: 15 },
+        { id: 2, img: 'assets/custom/top-boy-2.png', locked: true, cost: 15 },
+        { id: 3, img: 'assets/custom/top-boy-3.png', locked: true, cost: 20 },
+        { id: 4, img: 'assets/custom/top-boy-4.png', locked: true, cost: 20 },
+        { id: 5, img: 'assets/custom/top-boy-5.png', locked: true, cost: 25 },
+        { id: 6, img: 'assets/custom/top-boy-6.png', locked: true, cost: 25 },
+        { id: 7, img: 'assets/custom/top-boy-7.png', locked: true, cost: 30 }
       ],
       girl: [
-        { id: 1, img: 'assets/custom/top-girl-1.png', locked: false },
-        { id: 2, img: 'assets/custom/top-girl-2.png', locked: false },
-        { id: 3, img: 'assets/custom/top-girl-3.png', locked: false },
-        { id: 4, img: 'assets/custom/top-girl-4.png', locked: false },
-        { id: 5, img: 'assets/custom/top-girl-5.png', locked: false },
-        { id: 6, img: 'assets/custom/top-girl-6.png', locked: false },
-        { id: 7, img: 'assets/custom/top-girl-7.png', locked: false },
-        { id: 8, img: 'assets/custom/top-girl-8.png', locked: false }
+        { id: 1, img: 'assets/custom/top-girl-1.png', locked: true, cost: 15 },
+        { id: 2, img: 'assets/custom/top-girl-2.png', locked: true, cost: 15 },
+        { id: 3, img: 'assets/custom/top-girl-3.png', locked: true, cost: 20 },
+        { id: 4, img: 'assets/custom/top-girl-4.png', locked: true, cost: 20 },
+        { id: 5, img: 'assets/custom/top-girl-5.png', locked: true, cost: 25 },
+        { id: 6, img: 'assets/custom/top-girl-6.png', locked: true, cost: 25 },
+        { id: 7, img: 'assets/custom/top-girl-7.png', locked: true, cost: 30 },
+        { id: 8, img: 'assets/custom/top-girl-8.png', locked: true, cost: 30 }
       ]
     },
     bottoms: {
       boy: [
-        { id: 1, img: 'assets/custom/bottom-boy-1.png', locked: false },
-        { id: 2, img: 'assets/custom/bottom-boy-2.png', locked: false },
-        { id: 3, img: 'assets/custom/bottom-boy-3.png', locked: false },
-        { id: 4, img: 'assets/custom/bottom-boy-4.png', locked: false },
-        { id: 5, img: 'assets/custom/bottom-boy-5.png', locked: false },
-        { id: 6, img: 'assets/custom/bottom-boy-6.png', locked: false },
-        { id: 7, img: 'assets/custom/bottom-boy-7.png', locked: false }
+        { id: 1, img: 'assets/custom/bottom-boy-1.png', locked: true, cost: 15 },
+        { id: 2, img: 'assets/custom/bottom-boy-2.png', locked: true, cost: 15 },
+        { id: 3, img: 'assets/custom/bottom-boy-3.png', locked: true, cost: 20 },
+        { id: 4, img: 'assets/custom/bottom-boy-4.png', locked: true, cost: 20 },
+        { id: 5, img: 'assets/custom/bottom-boy-5.png', locked: true, cost: 25 },
+        { id: 6, img: 'assets/custom/bottom-boy-6.png', locked: true, cost: 25 },
+        { id: 7, img: 'assets/custom/bottom-boy-7.png', locked: true, cost: 30 }
       ],
       girl: [
-        { id: 1, img: 'assets/custom/bottom-girl-1.png', locked: false },
-        { id: 2, img: 'assets/custom/bottom-girl-2.png', locked: false },
-        { id: 3, img: 'assets/custom/bottom-girl-3.png', locked: false },
-        { id: 4, img: 'assets/custom/bottom-girl-4.png', locked: false },
-        { id: 5, img: 'assets/custom/bottom-girl-5.png', locked: false },
-        { id: 6, img: 'assets/custom/bottom-girl-6.png', locked: false },
-        { id: 7, img: 'assets/custom/bottom-girl-7.png', locked: false },
-        { id: 8, img: 'assets/custom/bottom-girl-8.png', locked: false }
+        { id: 1, img: 'assets/custom/bottom-girl-1.png', locked: true, cost: 15 },
+        { id: 2, img: 'assets/custom/bottom-girl-2.png', locked: true, cost: 15 },
+        { id: 3, img: 'assets/custom/bottom-girl-3.png', locked: true, cost: 20 },
+        { id: 4, img: 'assets/custom/bottom-girl-4.png', locked: true, cost: 20 },
+        { id: 5, img: 'assets/custom/bottom-girl-5.png', locked: true, cost: 25 },
+        { id: 6, img: 'assets/custom/bottom-girl-6.png', locked: true, cost: 25 },
+        { id: 7, img: 'assets/custom/bottom-girl-7.png', locked: true, cost: 30 },
+        { id: 8, img: 'assets/custom/bottom-girl-8.png', locked: true, cost: 30 }
       ]
     },
     specialSuits: {
       boy: [
-        { id: 1, img: 'assets/custom/suit-boy-1.png', locked: false },
-        { id: 2, img: 'assets/custom/suit-boy-2.png', locked: false },
-        { id: 3, img: 'assets/custom/suit-boy-3.png', locked: false }
+        { id: 1, img: 'assets/custom/suit-boy-1.png', locked: true, cost: 40 },
+        { id: 2, img: 'assets/custom/suit-boy-2.png', locked: true, cost: 45 },
+        { id: 3, img: 'assets/custom/suit-boy-3.png', locked: true, cost: 50 }
       ],
       girl: [
-        { id: 1, img: 'assets/custom/suit-girl-1.png', locked: false },
-        { id: 2, img: 'assets/custom/suit-girl-2.png', locked: false },
-        { id: 3, img: 'assets/custom/suit-girl-3.png', locked: false }
+        { id: 1, img: 'assets/custom/suit-girl-1.png', locked: true, cost: 40 },
+        { id: 2, img: 'assets/custom/suit-girl-2.png', locked: true, cost: 45 },
+        { id: 3, img: 'assets/custom/suit-girl-3.png', locked: true, cost: 50 }
       ]
     },
     accessories: [

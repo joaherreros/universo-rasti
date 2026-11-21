@@ -169,49 +169,50 @@ const RastiApp = (() => {
   function openOnboarding(force = false) {
     if (force) playTone('pop');
     state.onboardingStep = 1;
-    state.parentVerified = false;
-    const statusEl = document.getElementById('onb-gate-status');
-    if (statusEl) {
-      statusEl.textContent = '⏳ Pendiente';
-      statusEl.style.color = '#b45309';
+    const savedEmail = (RASTI_DATA.user.parentEmail || '').trim();
+    const emailInput = document.getElementById('onb-parent-email');
+    if (emailInput) {
+      emailInput.value = savedEmail;
     }
-    document.querySelectorAll('.onb-gate-btn').forEach(b => b.classList.remove('verified', 'wrong'));
+    validateOnboardingParentEmail(savedEmail, true);
     goOnboardingStep(1);
     renderOnboardingAvatars();
     document.getElementById('onboarding-overlay')?.classList.add('open');
   }
 
-  function verifyOnboardingParent(ans) {
-    document.querySelectorAll('.onb-gate-btn').forEach(btn => {
-      const val = parseInt(btn.dataset.ans, 10);
-      btn.classList.toggle('verified', val === 28 && ans === 28);
-      btn.classList.toggle('wrong', val === ans && ans !== 28);
-    });
+  function validateOnboardingParentEmail(val, silent = false) {
+    const clean = (val || '').trim();
+    const isValid = clean.length >= 3 && clean.includes('@');
+    state.parentVerified = isValid;
+    if (isValid) {
+      RASTI_DATA.user.parentEmail = clean;
+    }
     const statusEl = document.getElementById('onb-gate-status');
-    if (ans === 28) {
-      state.parentVerified = true;
-      playTone('success');
-      if (statusEl) {
-        statusEl.textContent = '✅ Adulto verificado';
+    if (statusEl) {
+      if (isValid) {
+        statusEl.textContent = '✅ Correo verificado';
         statusEl.style.color = '#15803d';
+      } else {
+        statusEl.textContent = '⏳ Ingresá un correo';
+        statusEl.style.color = '#b45309';
       }
-      showToast('✅ Verificación de adulto completada.', '🛡️');
-    } else {
-      state.parentVerified = false;
-      playTone('click');
-      if (statusEl) {
-        statusEl.textContent = '❌ Incorrecto';
-        statusEl.style.color = '#dc2626';
-      }
-      showToast('🔒Acceso restringido: la cuenta debe ser creada por un adulto responsable (7 × 4 = 28).', '👨‍👩‍👧');
     }
   }
 
+  function verifyOnboardingParent(ans) {
+    validateOnboardingParentEmail(document.getElementById('onb-parent-email')?.value || '');
+  }
+
   function goOnboardingStep(stepNum) {
-    if (stepNum > 1 && !state.parentVerified) {
-      playTone('click');
-      showToast('🔒 Restringido para padres: verificá primero el acceso de adulto (7 × 4 = 28).', '👨‍👩‍👧');
-      return;
+    if (stepNum > 1) {
+      const emailEl = document.getElementById('onb-parent-email');
+      if (emailEl) validateOnboardingParentEmail(emailEl.value, true);
+      if (!state.parentVerified) {
+        playTone('click');
+        showToast('🔒 Ingresá un correo electrónico del adulto (ej: padre@correo.com) para continuar.', '📧');
+        emailEl?.focus();
+        return;
+      }
     }
     playTone('click');
     state.onboardingStep = stepNum;
@@ -440,36 +441,39 @@ const RastiApp = (() => {
       `).join('');
     }
 
-    // 2. Ropa de arriba (Hombre en ♂, Mujer en ♀)
+    // 2. Ropa de arriba (Bloqueada inicialmente, desbloqueable con estrellas)
     const topsGrid = document.getElementById('custom-tops-grid');
     if (topsGrid) {
       topsGrid.innerHTML = (c.tops[gender] || []).map(t => `
-        <button type="button" class="item-thumb-btn ${u.topItem === t.id && !u.specialSuit ? 'selected' : ''}"
+        <button type="button" class="item-thumb-btn ${t.locked ? 'locked' : ''} ${!t.locked && u.topItem === t.id && !u.specialSuit ? 'selected' : ''}"
                 onclick="RastiApp.selectClothingItem('topItem', ${t.id})">
           <img src="${t.img}" alt="Prenda superior" />
+          ${t.locked ? `<span class="item-lock-badge">🔒 ${t.cost || 15}⭐</span>` : ''}
         </button>
       `).join('');
     }
 
-    // 3. Ropa de abajo (Hombre en ♂, Mujer en ♀)
+    // 3. Ropa de abajo (Bloqueada inicialmente, desbloqueable con estrellas)
     const bottomsGrid = document.getElementById('custom-bottoms-grid');
     if (bottomsGrid) {
       bottomsGrid.innerHTML = (c.bottoms[gender] || []).map(b => `
-        <button type="button" class="item-thumb-btn ${u.bottomItem === b.id && !u.specialSuit ? 'selected' : ''}"
+        <button type="button" class="item-thumb-btn ${b.locked ? 'locked' : ''} ${!b.locked && u.bottomItem === b.id && !u.specialSuit ? 'selected' : ''}"
                 onclick="RastiApp.selectClothingItem('bottomItem', ${b.id})">
           <img src="${b.img}" alt="Prenda inferior" />
+          ${b.locked ? `<span class="item-lock-badge">🔒 ${b.cost || 15}⭐</span>` : ''}
         </button>
       `).join('');
     }
 
-    // 4. Trajes Especiales según género (♂ o ♀)
+    // 4. Trajes Especiales según género (Bloqueados inicialmente, desbloqueables con estrellas)
     const suitsGrid = document.getElementById('custom-suits-grid');
     if (suitsGrid) {
       const suitList = Array.isArray(c.specialSuits) ? c.specialSuits : (c.specialSuits[gender] || []);
       suitsGrid.innerHTML = suitList.map(s => `
-        <button type="button" class="item-thumb-btn ${u.specialSuit === s.id ? 'selected' : ''}"
+        <button type="button" class="item-thumb-btn ${s.locked ? 'locked' : ''} ${!s.locked && u.specialSuit === s.id ? 'selected' : ''}"
                 onclick="RastiApp.selectSpecialSuit(${s.id})">
           <img src="${s.img}" alt="Traje especial" />
+          ${s.locked ? `<span class="item-lock-badge">🔒 ${s.cost || 40}⭐</span>` : ''}
         </button>
       `).join('');
     }
@@ -518,8 +522,9 @@ const RastiApp = (() => {
       const firstMatch = RASTI_DATA.profiles.find(p => p.gender === gender);
       if (firstMatch) RASTI_DATA.user.avatarId = firstMatch.id;
     }
-    RASTI_DATA.user.topItem = 1;
-    RASTI_DATA.user.bottomItem = 1;
+    RASTI_DATA.user.topItem = null;
+    RASTI_DATA.user.bottomItem = null;
+    RASTI_DATA.user.specialSuit = null;
     document.getElementById('btn-gender-boy')?.classList.toggle('active', gender === 'boy');
     document.getElementById('btn-gender-girl')?.classList.toggle('active', gender === 'girl');
     renderPersonalizacion();
@@ -546,16 +551,64 @@ const RastiApp = (() => {
   }
 
   function selectClothingItem(type, id) {
-    playTone('pop');
     const u = RASTI_DATA.user;
+    const list = type === 'topItem'
+      ? (RASTI_DATA.customization.tops[u.gender] || [])
+      : (RASTI_DATA.customization.bottoms[u.gender] || []);
+    const item = list.find(i => i.id === id);
+    if (!item) return;
+
+    if (item.locked) {
+      const cost = item.cost || 15;
+      if (u.stars >= cost) {
+        u.stars -= cost;
+        item.locked = false;
+        u[type] = id;
+        u.specialSuit = null;
+        playTone('success');
+        updateTopHud();
+        renderLogros();
+        renderPersonalizacion();
+        showToast(`🎉 ¡Prenda desbloqueada por ${cost} ⭐!`, '🔓');
+      } else {
+        playTone('click');
+        showToast(`🔒 Necesitás ${cost} ⭐ para desbloquear esta prenda (tenés ${u.stars} ⭐)`, '⭐');
+      }
+      return;
+    }
+
+    playTone('pop');
     u[type] = id;
     u.specialSuit = null;
     renderPersonalizacion();
   }
 
   function selectSpecialSuit(id) {
-    playTone('pop');
     const u = RASTI_DATA.user;
+    const c = RASTI_DATA.customization;
+    const suitList = Array.isArray(c.specialSuits) ? c.specialSuits : (c.specialSuits[u.gender] || []);
+    const suit = suitList.find(s => s.id === id);
+    if (!suit) return;
+
+    if (suit.locked) {
+      const cost = suit.cost || 40;
+      if (u.stars >= cost) {
+        u.stars -= cost;
+        suit.locked = false;
+        u.specialSuit = id;
+        playTone('success');
+        updateTopHud();
+        renderLogros();
+        renderPersonalizacion();
+        showToast(`🎉 ¡Traje especial desbloqueado por ${cost} ⭐!`, '🧑‍🚀');
+      } else {
+        playTone('click');
+        showToast(`🔒 Necesitás ${cost} ⭐ para desbloquear este traje (tenés ${u.stars} ⭐)`, '⭐');
+      }
+      return;
+    }
+
+    playTone('pop');
     u.specialSuit = u.specialSuit === id ? null : id;
     renderPersonalizacion();
   }
@@ -602,10 +655,10 @@ const RastiApp = (() => {
     const randomProfile = pool[Math.floor(Math.random() * pool.length)];
     u.avatarId = randomProfile.id;
     u.gender = randomProfile.gender;
-    const maxTops = (RASTI_DATA.customization.tops[u.gender] || []).length || 7;
-    const maxBots = (RASTI_DATA.customization.bottoms[u.gender] || []).length || 7;
-    u.topItem = rand(maxTops);
-    u.bottomItem = rand(maxBots);
+    const unlockedTops = (RASTI_DATA.customization.tops[u.gender] || []).filter(t => !t.locked);
+    const unlockedBots = (RASTI_DATA.customization.bottoms[u.gender] || []).filter(b => !b.locked);
+    u.topItem = unlockedTops.length ? unlockedTops[Math.floor(Math.random() * unlockedTops.length)].id : null;
+    u.bottomItem = unlockedBots.length ? unlockedBots[Math.floor(Math.random() * unlockedBots.length)].id : null;
     u.specialSuit = null;
     u.accessory = rand(6);
 
@@ -1437,7 +1490,7 @@ const RastiApp = (() => {
     playTone('pop');
     const u = RASTI_DATA.user;
 
-    // Restricción para padres (Verificación de Adulto Responsable según el documento)
+    // Restricción para padres mediante correo electrónico (Mockup)
     if (!skipGate && !state.parentPanelUnlocked) {
       const gateHtml = `
         <div style="text-align:center;padding:8px 10px;">
@@ -1447,18 +1500,19 @@ const RastiApp = (() => {
           <h2 style="font-family:var(--font-title);font-size:1.55rem;color:var(--rasti-navy);margin-top:10px;">
             VERIFICACIÓN PARENTAL
           </h2>
-          <p style="font-family:var(--font-btn);font-size:0.9rem;color:#334155;max-width:460px;margin:6px auto 14px;">
-            El adulto tiene un rol de supervisión para gestionar permisos de comunidad, publicaciones y consultar el historial. Resolvé para continuar:
+          <p style="font-family:var(--font-btn);font-size:0.9rem;color:#334155;max-width:480px;margin:6px auto 14px;">
+            Ingresá un correo electrónico de adulto responsable para acceder al panel de supervisión, permisos de comunidad e historial.
           </p>
-          <div style="background:#fff;border:2.5px solid #bae6fd;border-radius:20px;padding:16px;max-width:380px;margin:0 auto 12px;">
-            <div style="font-family:var(--font-title);font-size:1.45rem;color:var(--rasti-navy);margin-bottom:12px;">
-              ¿Cuánto es 6 × 3?
-            </div>
-            <div style="display:flex;justify-content:center;gap:12px;">
-              <button type="button" class="btn-rasti btn-rasti-white" onclick="RastiApp.unlockParentalPanel(12)">12</button>
-              <button type="button" class="btn-rasti btn-rasti-primary" onclick="RastiApp.unlockParentalPanel(18)">18</button>
-              <button type="button" class="btn-rasti btn-rasti-white" onclick="RastiApp.unlockParentalPanel(24)">24</button>
-            </div>
+          <div style="background:#fff;border:2.5px solid #bae6fd;border-radius:20px;padding:16px;max-width:420px;margin:0 auto 12px;display:flex;flex-direction:column;gap:12px;">
+            <input type="email"
+                   id="settings-parent-email"
+                   class="onb-text-input"
+                   value="${u.parentEmail || ''}"
+                   placeholder="ejemplo@correo.com"
+                   style="width:100%;text-align:center;" />
+            <button type="button" class="btn-rasti btn-rasti-primary" onclick="RastiApp.unlockParentalPanel()">
+              🔓 VERIFICAR E INGRESAR
+            </button>
           </div>
         </div>
       `;
@@ -1558,14 +1612,18 @@ const RastiApp = (() => {
     openModal(html);
   }
 
-  function unlockParentalPanel(ans) {
-    if (ans === 18) {
+  function unlockParentalPanel() {
+    const emailEl = document.getElementById('settings-parent-email');
+    const val = (emailEl ? emailEl.value : '').trim();
+    if (val.length >= 3 && val.includes('@')) {
+      RASTI_DATA.user.parentEmail = val;
       state.parentPanelUnlocked = true;
       playTone('success');
       openSettingsModal(true);
     } else {
       playTone('click');
-      showToast('🔒 Respuesta incorrecta. Panel exclusivo para padres (6 × 3 = 18).', '👨‍👩‍👧');
+      showToast('🔒 Ingresá un correo electrónico válido (ej: padre@correo.com) para continuar.', '📧');
+      emailEl?.focus();
     }
   }
 
@@ -1745,6 +1803,7 @@ const RastiApp = (() => {
   return {
     navigate,
     openOnboarding,
+    validateOnboardingParentEmail,
     verifyOnboardingParent,
     goOnboardingStep,
     updateOnboardingName,
