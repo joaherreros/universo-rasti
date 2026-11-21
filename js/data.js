@@ -24,7 +24,7 @@ window.RASTI_DATA = {
     topItem: null,
     bottomItem: null,
     specialSuit: null,
-    accessory: 1,
+    accessory: null,
     backpack: 5,
     parentEmail: '',
     parentalConsent: true,      // Consentimiento del adulto para participar en Familia Rasti
@@ -282,12 +282,12 @@ window.RASTI_DATA = {
       ]
     },
     accessories: [
-      { id: 1, img: 'assets/custom/acc-1.png', locked: false },
-      { id: 2, img: 'assets/custom/acc-2.png', locked: false },
-      { id: 3, img: 'assets/custom/acc-3.png', locked: false },
-      { id: 4, img: 'assets/custom/acc-4.png', locked: false },
-      { id: 5, img: 'assets/custom/acc-5.png', locked: false },
-      { id: 6, img: 'assets/custom/acc-6.png', locked: false }
+      { id: 1, img: 'assets/custom/acc-1.png', locked: true, cost: 10 },
+      { id: 2, img: 'assets/custom/acc-2.png', locked: true, cost: 15 },
+      { id: 3, img: 'assets/custom/acc-3.png', locked: true, cost: 15 },
+      { id: 4, img: 'assets/custom/acc-4.png', locked: true, cost: 20 },
+      { id: 5, img: 'assets/custom/acc-5.png', locked: true, cost: 20 },
+      { id: 6, img: 'assets/custom/acc-6.png', locked: true, cost: 10 }
     ]
   },
 

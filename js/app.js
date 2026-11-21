@@ -478,13 +478,14 @@ const RastiApp = (() => {
       `).join('');
     }
 
-    // 5. Accesorios (6 accesorios de accesorios.png)
+    // 5. Accesorios (6 accesorios de accesorios.png, bloqueados inicialmente por estrellas)
     const accGrid = document.getElementById('custom-accessories-grid');
     if (accGrid) {
       accGrid.innerHTML = (c.accessories || []).map(a => `
-        <button type="button" class="item-thumb-btn ${u.accessory === a.id ? 'selected' : ''}"
+        <button type="button" class="item-thumb-btn ${a.locked ? 'locked' : ''} ${!a.locked && u.accessory === a.id ? 'selected' : ''}"
                 onclick="RastiApp.selectAccessoryItem(${a.id})">
           <img src="${a.img}" alt="Accesorio" />
+          ${a.locked ? `<span class="item-lock-badge">🔒 ${a.cost || 15}⭐</span>` : ''}
         </button>
       `).join('');
     }
@@ -614,8 +615,30 @@ const RastiApp = (() => {
   }
 
   function selectAccessoryItem(id) {
+    const u = RASTI_DATA.user;
+    const acc = (RASTI_DATA.customization.accessories || []).find(a => a.id === id);
+    if (!acc) return;
+
+    if (acc.locked) {
+      const cost = acc.cost || 15;
+      if (u.stars >= cost) {
+        u.stars -= cost;
+        acc.locked = false;
+        u.accessory = id;
+        playTone('success');
+        updateTopHud();
+        renderLogros();
+        renderPersonalizacion();
+        showToast(`🎉 ¡Accesorio desbloqueado por ${cost} ⭐!`, '🎒');
+      } else {
+        playTone('click');
+        showToast(`🔒 Necesitás ${cost} ⭐ para desbloquear este accesorio (tenés ${u.stars} ⭐)`, '⭐');
+      }
+      return;
+    }
+
     playTone('pop');
-    RASTI_DATA.user.accessory = RASTI_DATA.user.accessory === id ? null : id;
+    u.accessory = u.accessory === id ? null : id;
     renderPersonalizacion();
   }
 
@@ -657,10 +680,11 @@ const RastiApp = (() => {
     u.gender = randomProfile.gender;
     const unlockedTops = (RASTI_DATA.customization.tops[u.gender] || []).filter(t => !t.locked);
     const unlockedBots = (RASTI_DATA.customization.bottoms[u.gender] || []).filter(b => !b.locked);
+    const unlockedAccs = (RASTI_DATA.customization.accessories || []).filter(a => !a.locked);
     u.topItem = unlockedTops.length ? unlockedTops[Math.floor(Math.random() * unlockedTops.length)].id : null;
     u.bottomItem = unlockedBots.length ? unlockedBots[Math.floor(Math.random() * unlockedBots.length)].id : null;
     u.specialSuit = null;
-    u.accessory = rand(6);
+    u.accessory = unlockedAccs.length ? unlockedAccs[Math.floor(Math.random() * unlockedAccs.length)].id : null;
 
     document.getElementById('btn-gender-boy')?.classList.toggle('active', u.gender === 'boy');
     document.getElementById('btn-gender-girl')?.classList.toggle('active', u.gender === 'girl');
@@ -908,6 +932,13 @@ const RastiApp = (() => {
   function closeModal() {
     playTone('click');
     stopWebcamStream();
+    if (state.currentAudio) {
+      state.currentAudio.pause();
+      state.currentAudio = null;
+    }
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
     document.getElementById('rasti-modal-backdrop')?.classList.remove('open');
   }
 
@@ -972,14 +1003,11 @@ const RastiApp = (() => {
         </div>
       `;
       openModal(introHtml);
-      playArgentineVoice('reino_intro.mp3', introText);
       return;
     }
 
     if (chosenMission.status === 'locked') {
       showToast('🔒 Debe completar el mundo "Reino Perdido" para desbloquear este nivel', '🏰');
-    } else if (w.id === 'reino' && chosenMission.num === 1 && chosenMission.audioFile) {
-      playArgentineVoice(chosenMission.audioFile, chosenMission.desc);
     }
 
     const previewImg = chosenMission.sceneImg || w.buildPreview;
