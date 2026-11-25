@@ -498,6 +498,74 @@
 
           </section>
 
+          <!-- ==============================================================
+               5. PANTALLA DEDICADA: REINO PERDIDO — NIVEL 1 (CONSTRUÍ UN PUENTE)
+               ============================================================== -->
+          <section id="screen-reino-nivel1" class="app-screen" aria-label="Nivel 1 - El Reino Perdido">
+
+            <!-- Barra superior izquierda: Volver a El Reino Perdido + Ver Mapa de Niveles -->
+            <div class="reino-lvl1-top-bar">
+              <button type="button" class="reino-back-pill" onclick="RastiApp.openModoAventuraFromInicio()">
+                <span class="reino-back-circle">‹</span>
+                <span>El Reino Perdido</span>
+              </button>
+
+              <button type="button" class="reino-sub-pill" onclick="RastiApp.openWorldModal('reino', 1, false)" title="Ver mapa de niveles del Reino Perdido">
+                🗺️ Niveles
+              </button>
+              <button type="button" class="reino-sub-pill" onclick="RastiApp.openWorldModal('reino', null, true)" title="Ver presentación del Reino Perdido">
+                📖 Historia
+              </button>
+            </div>
+
+            <!-- Recuadro Azul Derecho (Inspirado en diseño oficial Nivel 1) -->
+            <div class="reino-lvl1-stage">
+              <div class="reino-lvl1-blue-card">
+                <div class="reino-lvl1-card-top">
+                  <span class="reino-lvl1-badge">Nivel 1</span>
+                  <div class="reino-lvl1-audio-group">
+                    <button type="button" class="reino-lvl1-listen-btn" onclick="RastiApp.speakMissionStory('reino', 1)" title="Escuchar descripción del nivel">
+                      🔊 Escuchar
+                    </button>
+                    <button type="button" class="reino-lvl1-mute-btn js-mute-toggle-btn" data-mute-style="action-icon" onclick="RastiApp.toggleAudioMute()" title="Silenciar / Activar audio">
+                      🔇
+                    </button>
+                  </div>
+                </div>
+
+                <h1 class="reino-lvl1-title">Construí un puente</h1>
+
+                <p class="reino-lvl1-desc">
+                  ¡Oh, no! El puente que conectaba las dos orillas se derrumbó y el río impide que sigamos avanzando. Para continuar nuestra aventura, necesitamos construir un nuevo puente que nos permita cruzar al otro lado. ¡Es hora de poner a prueba tu ingenio y creatividad! Usá tus bloques Rasti para construir un puente resistente y devolverle al reino su camino.
+                </p>
+
+                <div class="reino-lvl1-stats-box">
+                  <div class="reino-stat-col">
+                    <span class="reino-stat-big">40</span>
+                    <span class="reino-stat-sub">PIEZAS</span>
+                  </div>
+                  <div class="reino-stat-divider"></div>
+                  <div class="reino-stat-col">
+                    <span class="reino-stat-sub">DIFICULTAD</span>
+                    <span class="reino-stat-green">BAJA</span>
+                  </div>
+                  <div class="reino-stat-divider"></div>
+                  <div class="reino-stat-col">
+                    <span class="reino-stat-med">PÁGINA 20</span>
+                    <span class="reino-stat-tiny">Manual de<br />instrucciones</span>
+                  </div>
+                </div>
+
+                <button type="button"
+                        class="reino-lvl1-cta-btn"
+                        onclick="RastiApp.openScannerModal('Construir un Puente', 'Reino Perdido', 'assets/builds/reino-puente-modelo.png', 10)">
+                  ¡Comenzar desafío!
+                </button>
+              </div>
+            </div>
+
+          </section>
+
         </div>
 
         <!-- ================================================================

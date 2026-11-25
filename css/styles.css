@@ -3808,3 +3808,342 @@ body.age-mode-4-6 .inicio-hero-cards {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* ==========================================================================
+   PANTALLA DEDICADA: REINO PERDIDO — NIVEL 1 (CONSTRUÍ UN PUENTE)
+   ========================================================================== */
+#screen-reino-nivel1 {
+  background: url('../assets/worlds/bg-reino-nivel1.jpg') center 76% / cover no-repeat;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+.reino-lvl1-top-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 6;
+  margin-bottom: 4px;
+}
+
+.reino-back-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 3px 18px 3px 4px;
+  border-radius: var(--radius-pill);
+  border: 2.5px solid #7ee8ff;
+  background: linear-gradient(180deg, #1b9bff 0%, #0066dc 100%);
+  color: #ffffff;
+  font-family: var(--font-btn);
+  font-weight: 700;
+  font-size: 0.92rem;
+  box-shadow: 0 5px 14px rgba(0, 28, 84, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition: transform 0.16s ease, filter 0.16s ease;
+}
+
+.reino-back-pill:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+}
+
+.reino-back-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+  border: 2px solid #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  line-height: 1;
+  padding-bottom: 2px;
+}
+
+.reino-sub-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 13px;
+  border-radius: var(--radius-pill);
+  border: 2px solid rgba(126, 232, 255, 0.85);
+  background: rgba(0, 36, 107, 0.82);
+  backdrop-filter: blur(6px);
+  color: #ffffff;
+  font-family: var(--font-btn);
+  font-weight: 700;
+  font-size: 0.78rem;
+  box-shadow: 0 4px 12px rgba(0, 20, 65, 0.35);
+  cursor: pointer;
+  transition: transform 0.16s ease, background 0.16s ease;
+}
+
+.reino-sub-pill:hover {
+  transform: translateY(-2px);
+  background: rgba(0, 56, 155, 0.94);
+}
+
+.reino-lvl1-stage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 12px 18px;
+  margin-top: -10px;
+}
+
+.reino-lvl1-blue-card {
+  width: min(455px, 47%);
+  background: linear-gradient(180deg, rgba(11, 78, 170, 0.94) 0%, rgba(5, 52, 128, 0.96) 100%);
+  border: 4px solid #35d8ff;
+  border-radius: 30px;
+  padding: 15px 22px 16px;
+  box-shadow:
+    0 16px 36px rgba(0, 18, 60, 0.52),
+    0 0 22px rgba(53, 216, 255, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  color: #ffffff;
+}
+
+.reino-lvl1-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.reino-lvl1-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #ffeb3b 0%, #f5b800 100%);
+  color: #0a2563;
+  font-family: var(--font-btn);
+  font-weight: 700;
+  font-size: 0.98rem;
+  padding: 4px 26px;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 3px 0 rgba(161, 80, 0, 0.55);
+}
+
+.reino-lvl1-audio-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.reino-lvl1-listen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1.5px solid rgba(126, 232, 255, 0.8);
+  color: #ffffff;
+  border-radius: var(--radius-pill);
+  padding: 4px 12px;
+  font-family: var(--font-btn);
+  font-weight: 700;
+  font-size: 0.76rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.reino-lvl1-listen-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.reino-lvl1-mute-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(126, 232, 255, 0.8);
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  font-size: 0.86rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.reino-lvl1-mute-btn:hover {
+  transform: scale(1.08);
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.reino-lvl1-title {
+  font-family: var(--font-title);
+  font-size: 2.02rem;
+  line-height: 1.04;
+  color: #ffffff;
+  letter-spacing: 0.01em;
+  text-shadow: 0 3px 8px rgba(0, 18, 60, 0.42);
+}
+
+.reino-lvl1-desc {
+  font-family: var(--font-btn);
+  font-size: 0.85rem;
+  line-height: 1.42;
+  color: #f0f9ff;
+  font-weight: 500;
+}
+
+.reino-lvl1-stats-box {
+  display: grid;
+  grid-template-columns: 1fr 1.5px 1.15fr 1.5px 1.25fr;
+  align-items: center;
+  border: 2px solid rgba(255, 255, 255, 0.72);
+  border-radius: 22px;
+  padding: 9px 10px;
+  background: rgba(0, 28, 84, 0.22);
+  text-align: center;
+}
+
+.reino-stat-divider {
+  width: 1.5px;
+  height: 38px;
+  background: rgba(255, 255, 255, 0.65);
+  justify-self: center;
+}
+
+.reino-stat-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+}
+
+.reino-stat-big {
+  font-family: var(--font-title);
+  font-size: 1.58rem;
+  line-height: 1;
+  color: #ffffff;
+}
+
+.reino-stat-med {
+  font-family: var(--font-title);
+  font-size: 1.02rem;
+  line-height: 1.05;
+  color: #ffffff;
+}
+
+.reino-stat-sub {
+  font-family: var(--font-btn);
+  font-weight: 700;
+  font-size: 0.76rem;
+  color: #e0f2fe;
+  letter-spacing: 0.02em;
+}
+
+.reino-stat-green {
+  font-family: var(--font-title);
+  font-size: 1.32rem;
+  line-height: 1.05;
+  color: #22e55c;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.reino-stat-tiny {
+  font-family: var(--font-btn);
+  font-weight: 500;
+  font-size: 0.68rem;
+  line-height: 1.15;
+  color: #e0f2fe;
+}
+
+.reino-lvl1-cta-btn {
+  width: 100%;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(180deg, #ffeb2b 0%, #ffc400 100%);
+  color: #0a2563;
+  font-family: var(--font-title);
+  font-size: 1.38rem;
+  letter-spacing: 0.01em;
+  padding: 11px 22px 12px;
+  cursor: pointer;
+  box-shadow:
+    0 5px 0 #d97706,
+    0 10px 20px rgba(0, 15, 55, 0.38),
+    inset 0 2px 0 rgba(255, 255, 255, 0.75);
+  transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.16s ease;
+}
+
+.reino-lvl1-cta-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  filter: brightness(1.04);
+}
+
+.reino-lvl1-cta-btn:active {
+  transform: translateY(3px) scale(0.99);
+}
+
+/* Ajustes responsivos de Nivel 1 Reino Perdido en mobile landscape */
+body.mobile-forced-landscape .reino-lvl1-stage {
+  padding: 0 10px 18px;
+  margin-top: -14px;
+}
+
+body.mobile-forced-landscape .reino-lvl1-blue-card {
+  width: min(435px, 49%);
+  padding: 11px 16px 12px;
+  gap: 7px;
+  border-radius: 24px;
+}
+
+body.mobile-forced-landscape .reino-lvl1-title {
+  font-size: 1.72rem;
+}
+
+body.mobile-forced-landscape .reino-lvl1-desc {
+  font-size: 0.78rem;
+  line-height: 1.34;
+}
+
+body.mobile-forced-landscape .reino-lvl1-stats-box {
+  padding: 6px 8px;
+  border-radius: 18px;
+}
+
+body.mobile-forced-landscape .reino-stat-big {
+  font-size: 1.35rem;
+}
+
+body.mobile-forced-landscape .reino-stat-green {
+  font-size: 1.15rem;
+}
+
+body.mobile-forced-landscape .reino-lvl1-cta-btn {
+  font-size: 1.18rem;
+  padding: 8px 18px 9px;
+}
+
+body.mobile-short-landscape .reino-lvl1-blue-card {
+  width: min(425px, 52%);
+  padding: 10px 15px 11px;
+  gap: 6px;
+}
+
+body.mobile-short-landscape .reino-lvl1-title {
+  font-size: 1.52rem;
+}
+
+body.mobile-short-landscape .reino-lvl1-desc {
+  font-size: 0.72rem;
+  line-height: 1.28;
+}
+
+body.mobile-short-landscape .reino-lvl1-cta-btn {
+  font-size: 1.05rem;
+  padding: 7px 16px 8px;
+}

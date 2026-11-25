@@ -384,9 +384,16 @@ const RastiApp = (() => {
       scr.classList.toggle('active', scr.id === `screen-${tabId}`);
     });
 
+    const activeNavTarget = tabId === 'reino-nivel1' ? 'modos' : tabId;
     document.querySelectorAll('.nav-tab').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.target === tabId);
+      btn.classList.toggle('active', btn.dataset.target === activeNavTarget);
     });
+  }
+
+  function openReinoNivel1Screen() {
+    closeModal();
+    navigate('reino-nivel1');
+    syncMuteButtons();
   }
 
   function openModoAventuraFromInicio() {
@@ -841,7 +848,6 @@ const RastiApp = (() => {
 
         <div class="post-card-caption" onclick="RastiApp.openPostDetailModal(${post.id})">
           <div class="post-card-title">${post.title}</div>
-          ${post.desc ? `<div class="post-card-desc">${post.desc}</div>` : ''}
         </div>
 
         <div class="post-card-actions">
@@ -1064,10 +1070,14 @@ const RastiApp = (() => {
           </p>
         </div>
 
-        <div style="display:flex;justify-content:flex-end;gap:12px;">
-          <button type="button" class="btn-rasti btn-rasti-build" style="padding:12px 26px;font-size:1.02rem;"
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button type="button" class="btn-rasti btn-rasti-white" style="padding:10px 18px;font-size:0.86rem;"
                   onclick="RastiApp.openWorldModal('reino', 1, false)">
-            🏰 IR AL MAPA Y NIVEL 1: CONSTRUIR UN PUENTE →
+            🗺️ VER MAPA DE NIVELES
+          </button>
+          <button type="button" class="btn-rasti btn-rasti-build" style="padding:12px 26px;font-size:1.02rem;"
+                  onclick="RastiApp.openReinoNivel1Screen()">
+            🏰 IR AL NIVEL 1: CONSTRUÍ UN PUENTE →
           </button>
         </div>
       `;
@@ -1170,15 +1180,20 @@ const RastiApp = (() => {
         <div style="flex-shrink:0;">
           ${chosenMission.status === 'locked' ? `
             <button type="button" class="btn-rasti btn-rasti-primary" style="padding:11px 16px;font-size:0.85rem;"
-                    onclick="RastiApp.openWorldModal('reino', 1, false)">
+                    onclick="RastiApp.openReinoNivel1Screen()">
               🏰 IR A NIVEL 1 DE REINO PERDIDO →
+            </button>
+          ` : (w.id === 'reino' && chosenMission.num === 1 ? `
+            <button type="button" class="btn-rasti btn-rasti-yellow" style="padding:12px 20px;font-size:0.95rem;"
+                    onclick="RastiApp.openReinoNivel1Screen()">
+              🏰 ENTRAR AL NIVEL 1 →
             </button>
           ` : `
             <button type="button" class="btn-rasti btn-rasti-build" style="padding:12px 20px;font-size:0.95rem;"
                     onclick="RastiApp.openScannerModal('${chosenMission.title}', '${w.name}', '${chosenMission.modelImg || w.buildPreview}', ${chosenMission.stars})">
               📷 ESCANEAR CON CÁMARA
             </button>
-          `}
+          `)}
         </div>
       </div>
     `;
@@ -1812,6 +1827,8 @@ const RastiApp = (() => {
     } else if (hash === 'familia') {
       navigate('modos');
       switchModosView('familia');
+    } else if (hash === 'reino-nivel1') {
+      openReinoNivel1Screen();
     } else if (hash === 'mundo-espacial') {
       navigate('inicio');
       openWorldModal('espacial');
@@ -1957,6 +1974,7 @@ const RastiApp = (() => {
     finishOnboarding,
     openModoAventuraFromInicio,
     openFamiliaFromInicio,
+    openReinoNivel1Screen,
     setAgeGroup,
     speakWelcome,
     toggleAudioMute,

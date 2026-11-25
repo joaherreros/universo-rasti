@@ -74,7 +74,7 @@ window.RASTI_DATA = {
         {
           num: 1,
           title: 'Construir un Puente',
-          blocks: 25,
+          blocks: 40,
           stars: 10,
           status: 'current',
           desc: '¡Oh, no! El puente que conectaba las dos orillas se derrumbó y el río impide que sigamos avanzando. Para continuar nuestra aventura, necesitamos construir un nuevo puente que nos permita cruzar al otro lado. ¡Es hora de poner a prueba tu ingenio y creatividad! Usá tus bloques Rasti para construir un puente resistente y devolverle al reino su camino.',
