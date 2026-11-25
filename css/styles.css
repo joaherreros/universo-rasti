@@ -3813,7 +3813,7 @@ body.age-mode-4-6 .inicio-hero-cards {
    PANTALLA DEDICADA: REINO PERDIDO — NIVEL 1 (CONSTRUÍ UN PUENTE)
    ========================================================================== */
 #screen-reino-nivel1 {
-  background: url('../assets/worlds/bg-reino-nivel1.jpg') center 76% / cover no-repeat;
+  background: url('../assets/worlds/bg-reino-nivel1.jpg') center center / cover no-repeat;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
