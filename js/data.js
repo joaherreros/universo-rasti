@@ -26,7 +26,7 @@ window.RASTI_DATA = {
     specialSuit: null,
     accessory: null,
     backpack: 5,
-    parentEmail: '',
+    parentEmail: 'adulto.responsable@ejemplo.com',
     parentalConsent: true,      // Consentimiento del adulto para participar en Familia Rasti
     publishingEnabled: true,    // Permiso del adulto para publicar fotos de construcciones
     sharedHistory: []
@@ -229,65 +229,65 @@ window.RASTI_DATA = {
     },
     tops: {
       boy: [
-        { id: 1, img: 'assets/custom/top-boy-1.png', locked: true, cost: 15 },
-        { id: 2, img: 'assets/custom/top-boy-2.png', locked: true, cost: 15 },
-        { id: 3, img: 'assets/custom/top-boy-3.png', locked: true, cost: 20 },
-        { id: 4, img: 'assets/custom/top-boy-4.png', locked: true, cost: 20 },
-        { id: 5, img: 'assets/custom/top-boy-5.png', locked: true, cost: 25 },
-        { id: 6, img: 'assets/custom/top-boy-6.png', locked: true, cost: 25 },
-        { id: 7, img: 'assets/custom/top-boy-7.png', locked: true, cost: 30 }
+        { id: 1, img: 'assets/custom/top-boy-1.png', locked: true, cost: 50 },
+        { id: 2, img: 'assets/custom/top-boy-2.png', locked: true, cost: 55 },
+        { id: 3, img: 'assets/custom/top-boy-3.png', locked: true, cost: 60 },
+        { id: 4, img: 'assets/custom/top-boy-4.png', locked: true, cost: 65 },
+        { id: 5, img: 'assets/custom/top-boy-5.png', locked: true, cost: 70 },
+        { id: 6, img: 'assets/custom/top-boy-6.png', locked: true, cost: 75 },
+        { id: 7, img: 'assets/custom/top-boy-7.png', locked: true, cost: 80 }
       ],
       girl: [
-        { id: 1, img: 'assets/custom/top-girl-1.png', locked: true, cost: 15 },
-        { id: 2, img: 'assets/custom/top-girl-2.png', locked: true, cost: 15 },
-        { id: 3, img: 'assets/custom/top-girl-3.png', locked: true, cost: 20 },
-        { id: 4, img: 'assets/custom/top-girl-4.png', locked: true, cost: 20 },
-        { id: 5, img: 'assets/custom/top-girl-5.png', locked: true, cost: 25 },
-        { id: 6, img: 'assets/custom/top-girl-6.png', locked: true, cost: 25 },
-        { id: 7, img: 'assets/custom/top-girl-7.png', locked: true, cost: 30 },
-        { id: 8, img: 'assets/custom/top-girl-8.png', locked: true, cost: 30 }
+        { id: 1, img: 'assets/custom/top-girl-1.png', locked: true, cost: 50 },
+        { id: 2, img: 'assets/custom/top-girl-2.png', locked: true, cost: 55 },
+        { id: 3, img: 'assets/custom/top-girl-3.png', locked: true, cost: 60 },
+        { id: 4, img: 'assets/custom/top-girl-4.png', locked: true, cost: 65 },
+        { id: 5, img: 'assets/custom/top-girl-5.png', locked: true, cost: 70 },
+        { id: 6, img: 'assets/custom/top-girl-6.png', locked: true, cost: 75 },
+        { id: 7, img: 'assets/custom/top-girl-7.png', locked: true, cost: 80 },
+        { id: 8, img: 'assets/custom/top-girl-8.png', locked: true, cost: 85 }
       ]
     },
     bottoms: {
       boy: [
-        { id: 1, img: 'assets/custom/bottom-boy-1.png', locked: true, cost: 15 },
-        { id: 2, img: 'assets/custom/bottom-boy-2.png', locked: true, cost: 15 },
-        { id: 3, img: 'assets/custom/bottom-boy-3.png', locked: true, cost: 20 },
-        { id: 4, img: 'assets/custom/bottom-boy-4.png', locked: true, cost: 20 },
-        { id: 5, img: 'assets/custom/bottom-boy-5.png', locked: true, cost: 25 },
-        { id: 6, img: 'assets/custom/bottom-boy-6.png', locked: true, cost: 25 },
-        { id: 7, img: 'assets/custom/bottom-boy-7.png', locked: true, cost: 30 }
+        { id: 1, img: 'assets/custom/bottom-boy-1.png', locked: true, cost: 50 },
+        { id: 2, img: 'assets/custom/bottom-boy-2.png', locked: true, cost: 55 },
+        { id: 3, img: 'assets/custom/bottom-boy-3.png', locked: true, cost: 60 },
+        { id: 4, img: 'assets/custom/bottom-boy-4.png', locked: true, cost: 65 },
+        { id: 5, img: 'assets/custom/bottom-boy-5.png', locked: true, cost: 70 },
+        { id: 6, img: 'assets/custom/bottom-boy-6.png', locked: true, cost: 75 },
+        { id: 7, img: 'assets/custom/bottom-boy-7.png', locked: true, cost: 80 }
       ],
       girl: [
-        { id: 1, img: 'assets/custom/bottom-girl-1.png', locked: true, cost: 15 },
-        { id: 2, img: 'assets/custom/bottom-girl-2.png', locked: true, cost: 15 },
-        { id: 3, img: 'assets/custom/bottom-girl-3.png', locked: true, cost: 20 },
-        { id: 4, img: 'assets/custom/bottom-girl-4.png', locked: true, cost: 20 },
-        { id: 5, img: 'assets/custom/bottom-girl-5.png', locked: true, cost: 25 },
-        { id: 6, img: 'assets/custom/bottom-girl-6.png', locked: true, cost: 25 },
-        { id: 7, img: 'assets/custom/bottom-girl-7.png', locked: true, cost: 30 },
-        { id: 8, img: 'assets/custom/bottom-girl-8.png', locked: true, cost: 30 }
+        { id: 1, img: 'assets/custom/bottom-girl-1.png', locked: true, cost: 50 },
+        { id: 2, img: 'assets/custom/bottom-girl-2.png', locked: true, cost: 55 },
+        { id: 3, img: 'assets/custom/bottom-girl-3.png', locked: true, cost: 60 },
+        { id: 4, img: 'assets/custom/bottom-girl-4.png', locked: true, cost: 65 },
+        { id: 5, img: 'assets/custom/bottom-girl-5.png', locked: true, cost: 70 },
+        { id: 6, img: 'assets/custom/bottom-girl-6.png', locked: true, cost: 75 },
+        { id: 7, img: 'assets/custom/bottom-girl-7.png', locked: true, cost: 80 },
+        { id: 8, img: 'assets/custom/bottom-girl-8.png', locked: true, cost: 85 }
       ]
     },
     specialSuits: {
       boy: [
-        { id: 1, img: 'assets/custom/suit-boy-1.png', locked: true, cost: 40 },
-        { id: 2, img: 'assets/custom/suit-boy-2.png', locked: true, cost: 45 },
-        { id: 3, img: 'assets/custom/suit-boy-3.png', locked: true, cost: 50 }
+        { id: 1, img: 'assets/custom/suit-boy-1.png', locked: true, cost: 80 },
+        { id: 2, img: 'assets/custom/suit-boy-2.png', locked: true, cost: 90 },
+        { id: 3, img: 'assets/custom/suit-boy-3.png', locked: true, cost: 100 }
       ],
       girl: [
-        { id: 1, img: 'assets/custom/suit-girl-1.png', locked: true, cost: 40 },
-        { id: 2, img: 'assets/custom/suit-girl-2.png', locked: true, cost: 45 },
-        { id: 3, img: 'assets/custom/suit-girl-3.png', locked: true, cost: 50 }
+        { id: 1, img: 'assets/custom/suit-girl-1.png', locked: true, cost: 80 },
+        { id: 2, img: 'assets/custom/suit-girl-2.png', locked: true, cost: 90 },
+        { id: 3, img: 'assets/custom/suit-girl-3.png', locked: true, cost: 100 }
       ]
     },
     accessories: [
-      { id: 1, img: 'assets/custom/acc-1.png', locked: true, cost: 10 },
-      { id: 2, img: 'assets/custom/acc-2.png', locked: true, cost: 15 },
-      { id: 3, img: 'assets/custom/acc-3.png', locked: true, cost: 15 },
-      { id: 4, img: 'assets/custom/acc-4.png', locked: true, cost: 20 },
-      { id: 5, img: 'assets/custom/acc-5.png', locked: true, cost: 20 },
-      { id: 6, img: 'assets/custom/acc-6.png', locked: true, cost: 10 }
+      { id: 1, img: 'assets/custom/acc-1.png', locked: true, cost: 50 },
+      { id: 2, img: 'assets/custom/acc-2.png', locked: true, cost: 55 },
+      { id: 3, img: 'assets/custom/acc-3.png', locked: true, cost: 60 },
+      { id: 4, img: 'assets/custom/acc-4.png', locked: true, cost: 65 },
+      { id: 5, img: 'assets/custom/acc-5.png', locked: true, cost: 70 },
+      { id: 6, img: 'assets/custom/acc-6.png', locked: true, cost: 50 }
     ]
   },
 
@@ -351,15 +351,16 @@ window.RASTI_DATA = {
     }
   ],
 
-  // Publicaciones de la Galería "Familia Rasti" (Página 4 Pantalla 3 del PDF)
+  // Publicaciones de la Galería "Familia Rasti" (Construcciones reales con bloques Rasti)
   familiaGallery: [
     {
       id: 1,
       author: '@Lordlyburrito71',
       avatar: 'assets/avatars/avatar-1.png',
-      title: 'Castillo Real de las 4 Torres',
+      title: 'Castillo Real de las Torres',
+      desc: 'Fortaleza real con dos torres gemelas, banderines rojos y gran portón levadizo del Reino Perdido.',
       world: 'Reino Perdido',
-      img: 'assets/builds/build-castle.jpg',
+      img: 'assets/builds/familia-castillo.jpg',
       likes: 1200,
       likesDisplay: '1.2K',
       liked: true,
@@ -371,37 +372,40 @@ window.RASTI_DATA = {
       id: 2,
       author: '@FlorPop26',
       avatar: 'assets/avatars/avatar-2.png',
-      title: 'Jardín Botánico Multicolor',
-      world: 'Creación Libre',
-      img: 'assets/builds/build-flowers.jpg',
+      title: 'Faro Luminoso de la Costa',
+      desc: 'Un faro rojo y blanco con cúpula celeste brillante para guiar a los barcos en la Expedición Submarina.',
+      world: 'Expedición Submarina',
+      img: 'assets/builds/familia-faro.jpg',
       likes: 852,
       likesDisplay: '852',
       liked: false,
       saved: true,
-      blocksUsed: 95,
+      blocksUsed: 96,
       category: 'galería'
     },
     {
       id: 3,
       author: '@LordDragoncito',
       avatar: 'assets/avatars/avatar-3.png',
-      title: 'Supercar Relámpago Amarillo',
+      title: 'Helicóptero de Rescate Rasti',
+      desc: 'Helicóptero aéreo con cabina transparente, hélices rojas giratorias y patines de aterrizaje.',
       world: 'Desafíos Rasti',
-      img: 'assets/builds/build-supercar.jpg',
+      img: 'assets/builds/familia-helicoptero.jpg',
       likes: 974,
       likesDisplay: '974',
       liked: true,
       saved: true,
-      blocksUsed: 120,
+      blocksUsed: 118,
       category: 'desafíos'
     },
     {
       id: 4,
       author: '@BurritoGalactico',
       avatar: 'assets/avatars/avatar-4.png',
-      title: 'Perrito Beagle Guardián',
+      title: 'Perrito Guardián Rasti',
+      desc: 'Un fiel perrito armado con bloques Rasti, orejas articuladas y nariz simpática listo para jugar.',
       world: 'Amigos',
-      img: 'assets/builds/build-dog.jpg',
+      img: 'assets/builds/familia-perro.jpg',
       likes: 689,
       likesDisplay: '689',
       liked: false,
@@ -414,8 +418,9 @@ window.RASTI_DATA = {
       author: '@DinoExplorador99',
       avatar: 'assets/avatars/avatar-5.png',
       title: 'T-Rex Rey de la Selva',
+      desc: 'Dinosaurio guardián de la Isla Misteriosa armado con bloques verdes y detalles articulados.',
       world: 'Isla Misteriosa',
-      img: 'assets/builds/build-dino.jpg',
+      img: 'assets/builds/familia-dino.jpg',
       likes: 1500,
       likesDisplay: '1.5K',
       liked: true,
@@ -427,43 +432,46 @@ window.RASTI_DATA = {
       id: 6,
       author: '@PandaEspacial',
       avatar: 'assets/avatars/avatar-6.png',
-      title: 'Casa del Árbol Secreta',
-      world: 'Isla Misteriosa',
-      img: 'assets/builds/build-treehouse.jpg',
+      title: 'Molino de Viento del Valle',
+      desc: 'Un molino colorido con aspas gigantes que giran con la brisa de las montañas del Reino Perdido.',
+      world: 'Reino Perdido',
+      img: 'assets/builds/familia-molino.jpg',
       likes: 1120,
       likesDisplay: '1.1K',
       liked: false,
       saved: true,
-      blocksUsed: 160,
+      blocksUsed: 124,
       category: 'amigos'
     },
     {
       id: 7,
       author: '@GatoEspacial7',
       avatar: 'assets/avatars/avatar-7.png',
-      title: 'Cohete Despegue Lunar',
+      title: 'Robot Explorador Galáctico',
+      desc: 'Robot articulado con visor celeste, antenas amarillas y armadura espacial para misiones en otros planetas.',
       world: 'Estación Espacial',
-      img: 'assets/builds/build-rocket.jpg',
+      img: 'assets/builds/familia-robot.jpg',
       likes: 940,
       likesDisplay: '940',
       liked: false,
       saved: false,
-      blocksUsed: 110,
+      blocksUsed: 112,
       category: 'galería'
     },
     {
       id: 8,
       author: '@CoralSubmarino',
       avatar: 'assets/avatars/avatar-8.png',
-      title: 'Gran Ballena Azul del Arrecife',
+      title: 'Lancha Veloz del Arrecife',
+      desc: 'Embarcación rápida de bloques Rasti diseñada para navegar ríos y mares en busca de tesoros.',
       world: 'Expedición Submarina',
-      img: 'assets/builds/build-whale.jpg',
+      img: 'assets/builds/familia-lancha.jpg',
       likes: 780,
       likesDisplay: '780',
       liked: true,
       saved: false,
-      blocksUsed: 105,
-      category: 'noticias'
+      blocksUsed: 98,
+      category: 'galería'
     }
   ],
 

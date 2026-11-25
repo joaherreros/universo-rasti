@@ -11,6 +11,9 @@ const RastiApp = (() => {
     charZoomed: false,
     charFlipped: false,
     soundEnabled: true,
+    isMuted: false,
+    parentVerified: false,
+    parentPanelUnlocked: false,
     parentalConsent: true,
     onboardingStep: 1,
     selectedWorldId: 'espacial',
@@ -20,10 +23,52 @@ const RastiApp = (() => {
   };
 
   // ==========================================================================
-  // AUDIO: VOZ ARGENTINA NEURONAL (es-AR) + EFECTOS DE SONIDO
+  // AUDIO: VOZ ARGENTINA NEURONAL (es-AR) + EFECTOS DE SONIDO + MUTE GLOBAL
   // ==========================================================================
+  function syncMuteButtons() {
+    document.querySelectorAll('.js-mute-toggle-btn').forEach(btn => {
+      const style = btn.dataset.muteStyle || 'icon';
+      btn.classList.toggle('is-muted', state.isMuted);
+      if (style === 'text') {
+        btn.textContent = state.isMuted ? '🔊 ACTIVAR AUDIO' : '🔇 MUTEAR';
+      } else if (style === 'action-icon') {
+        btn.textContent = state.isMuted ? '🔊' : '🔇';
+      } else {
+        btn.textContent = state.isMuted ? '🔇' : '🔊';
+      }
+      btn.setAttribute('title', state.isMuted ? 'Activar audio' : 'Silenciar audio');
+      btn.setAttribute('aria-pressed', state.isMuted ? 'true' : 'false');
+    });
+  }
+
+  function toggleAudioMute() {
+    state.isMuted = !state.isMuted;
+
+    if (state.isMuted) {
+      if (state.currentAudio) {
+        state.currentAudio.pause();
+        state.currentAudio = null;
+      }
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      document.getElementById('btn-voice-welcome')?.classList.remove('speaking');
+    }
+
+    const storyVideo = document.getElementById('rasti-story-video-player');
+    if (storyVideo) {
+      storyVideo.muted = state.isMuted;
+    }
+
+    syncMuteButtons();
+    if (!state.isMuted) {
+      playTone('click');
+    }
+    showToast(state.isMuted ? 'Audio silenciado' : 'Audio activado', state.isMuted ? '🔇' : '🔊');
+  }
+
   function playTone(type = 'click') {
-    if (!state.soundEnabled) return;
+    if (!state.soundEnabled || state.isMuted) return;
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
       const osc = ctx.createOscillator();
@@ -77,6 +122,11 @@ const RastiApp = (() => {
       window.speechSynthesis.cancel();
     }
 
+    if (state.isMuted) {
+      if (onEndCallback) onEndCallback();
+      return;
+    }
+
     if (mp3File) {
       const audio = new Audio(`assets/audio/${mp3File}`);
       state.currentAudio = audio;
@@ -96,6 +146,10 @@ const RastiApp = (() => {
   }
 
   function speakWithLatamVoice(text, onEndCallback) {
+    if (state.isMuted) {
+      if (onEndCallback) onEndCallback();
+      return;
+    }
     if (!('speechSynthesis' in window) || !text) {
       if (onEndCallback) setTimeout(onEndCallback, 1800);
       return;
@@ -169,50 +223,56 @@ const RastiApp = (() => {
   function openOnboarding(force = false) {
     if (force) playTone('pop');
     state.onboardingStep = 1;
-    const savedEmail = (RASTI_DATA.user.parentEmail || '').trim();
-    const emailInput = document.getElementById('onb-parent-email');
-    if (emailInput) {
-      emailInput.value = savedEmail;
+    state.parentVerified = false;
+    const savedEmail = (RASTI_DATA.user.parentEmail || 'adulto.responsable@ejemplo.com').trim();
+    RASTI_DATA.user.parentEmail = savedEmail;
+
+    const emailDisplay = document.getElementById('onb-parent-email-display');
+    if (emailDisplay) emailDisplay.textContent = savedEmail;
+
+    const verifyBtn = document.getElementById('onb-verify-email-btn');
+    if (verifyBtn) {
+      verifyBtn.className = 'btn-rasti btn-rasti-primary';
+      verifyBtn.textContent = '✓ VERIFICAR';
     }
-    validateOnboardingParentEmail(savedEmail, true);
+
+    const statusEl = document.getElementById('onb-gate-status');
+    if (statusEl) {
+      statusEl.textContent = '⏳ Pendiente';
+      statusEl.style.color = '#b45309';
+    }
+
     goOnboardingStep(1);
     renderOnboardingAvatars();
     document.getElementById('onboarding-overlay')?.classList.add('open');
   }
 
   function validateOnboardingParentEmail(val, silent = false) {
-    const clean = (val || '').trim();
-    const isValid = clean.length >= 3 && clean.includes('@');
-    state.parentVerified = isValid;
-    if (isValid) {
-      RASTI_DATA.user.parentEmail = clean;
+    // Mantenido por compatibilidad; ahora la verificación se realiza mediante botón «Verificar»
+    return state.parentVerified;
+  }
+
+  function verifyOnboardingParent() {
+    state.parentVerified = true;
+    const verifyBtn = document.getElementById('onb-verify-email-btn');
+    if (verifyBtn) {
+      verifyBtn.className = 'btn-rasti btn-rasti-completed';
+      verifyBtn.textContent = '✓ VERIFICADO';
     }
     const statusEl = document.getElementById('onb-gate-status');
     if (statusEl) {
-      if (isValid) {
-        statusEl.textContent = '✅ Correo verificado';
-        statusEl.style.color = '#15803d';
-      } else {
-        statusEl.textContent = '⏳ Ingresá un correo';
-        statusEl.style.color = '#b45309';
-      }
+      statusEl.textContent = '✅ Adulto verificado';
+      statusEl.style.color = '#15803d';
     }
-  }
-
-  function verifyOnboardingParent(ans) {
-    validateOnboardingParentEmail(document.getElementById('onb-parent-email')?.value || '');
+    playTone('success');
+    showToast('✅ Correo verificado. Ya podés continuar.', '📧');
   }
 
   function goOnboardingStep(stepNum) {
-    if (stepNum > 1) {
-      const emailEl = document.getElementById('onb-parent-email');
-      if (emailEl) validateOnboardingParentEmail(emailEl.value, true);
-      if (!state.parentVerified) {
-        playTone('click');
-        showToast('🔒 Ingresá un correo electrónico del adulto (ej: padre@correo.com) para continuar.', '📧');
-        emailEl?.focus();
-        return;
-      }
+    if (stepNum > 1 && !state.parentVerified) {
+      playTone('click');
+      showToast('🔒 Tocá el botón «Verificar» para confirmar el acceso de adulto.', '📧');
+      return;
     }
     playTone('click');
     state.onboardingStep = stepNum;
@@ -441,26 +501,26 @@ const RastiApp = (() => {
       `).join('');
     }
 
-    // 2. Ropa de arriba (Bloqueada inicialmente, desbloqueable con estrellas)
+    // 2. Ropa de arriba (Bloqueada inicialmente, desbloqueable con estrellas desde 50⭐)
     const topsGrid = document.getElementById('custom-tops-grid');
     if (topsGrid) {
       topsGrid.innerHTML = (c.tops[gender] || []).map(t => `
         <button type="button" class="item-thumb-btn ${t.locked ? 'locked' : ''} ${!t.locked && u.topItem === t.id && !u.specialSuit ? 'selected' : ''}"
                 onclick="RastiApp.selectClothingItem('topItem', ${t.id})">
           <img src="${t.img}" alt="Prenda superior" />
-          ${t.locked ? `<span class="item-lock-badge">🔒 ${t.cost || 15}⭐</span>` : ''}
+          ${t.locked ? `<span class="item-lock-badge">🔒 ${t.cost || 50}⭐</span>` : ''}
         </button>
       `).join('');
     }
 
-    // 3. Ropa de abajo (Bloqueada inicialmente, desbloqueable con estrellas)
+    // 3. Ropa de abajo (Bloqueada inicialmente, desbloqueable con estrellas desde 50⭐)
     const bottomsGrid = document.getElementById('custom-bottoms-grid');
     if (bottomsGrid) {
       bottomsGrid.innerHTML = (c.bottoms[gender] || []).map(b => `
         <button type="button" class="item-thumb-btn ${b.locked ? 'locked' : ''} ${!b.locked && u.bottomItem === b.id && !u.specialSuit ? 'selected' : ''}"
                 onclick="RastiApp.selectClothingItem('bottomItem', ${b.id})">
           <img src="${b.img}" alt="Prenda inferior" />
-          ${b.locked ? `<span class="item-lock-badge">🔒 ${b.cost || 15}⭐</span>` : ''}
+          ${b.locked ? `<span class="item-lock-badge">🔒 ${b.cost || 50}⭐</span>` : ''}
         </button>
       `).join('');
     }
@@ -473,7 +533,7 @@ const RastiApp = (() => {
         <button type="button" class="item-thumb-btn ${s.locked ? 'locked' : ''} ${!s.locked && u.specialSuit === s.id ? 'selected' : ''}"
                 onclick="RastiApp.selectSpecialSuit(${s.id})">
           <img src="${s.img}" alt="Traje especial" />
-          ${s.locked ? `<span class="item-lock-badge">🔒 ${s.cost || 40}⭐</span>` : ''}
+          ${s.locked ? `<span class="item-lock-badge">🔒 ${s.cost || 80}⭐</span>` : ''}
         </button>
       `).join('');
     }
@@ -485,7 +545,7 @@ const RastiApp = (() => {
         <button type="button" class="item-thumb-btn ${a.locked ? 'locked' : ''} ${!a.locked && u.accessory === a.id ? 'selected' : ''}"
                 onclick="RastiApp.selectAccessoryItem(${a.id})">
           <img src="${a.img}" alt="Accesorio" />
-          ${a.locked ? `<span class="item-lock-badge">🔒 ${a.cost || 15}⭐</span>` : ''}
+          ${a.locked ? `<span class="item-lock-badge">🔒 ${a.cost || 50}⭐</span>` : ''}
         </button>
       `).join('');
     }
@@ -560,7 +620,7 @@ const RastiApp = (() => {
     if (!item) return;
 
     if (item.locked) {
-      const cost = item.cost || 15;
+      const cost = item.cost || 50;
       if (u.stars >= cost) {
         u.stars -= cost;
         item.locked = false;
@@ -592,7 +652,7 @@ const RastiApp = (() => {
     if (!suit) return;
 
     if (suit.locked) {
-      const cost = suit.cost || 40;
+      const cost = suit.cost || 80;
       if (u.stars >= cost) {
         u.stars -= cost;
         suit.locked = false;
@@ -620,7 +680,7 @@ const RastiApp = (() => {
     if (!acc) return;
 
     if (acc.locked) {
-      const cost = acc.cost || 15;
+      const cost = acc.cost || 50;
       if (u.stars >= cost) {
         u.stars -= cost;
         acc.locked = false;
@@ -779,6 +839,11 @@ const RastiApp = (() => {
           <span class="post-world-tag">🧱 ${post.blocksUsed}</span>
         </div>
 
+        <div class="post-card-caption" onclick="RastiApp.openPostDetailModal(${post.id})">
+          <div class="post-card-title">${post.title}</div>
+          ${post.desc ? `<div class="post-card-desc">${post.desc}</div>` : ''}
+        </div>
+
         <div class="post-card-actions">
           <button type="button" class="btn-like-pill ${post.liked ? 'liked' : ''}" onclick="RastiApp.toggleLikePost(${post.id})">
             <span>${post.liked ? '❤️' : '🤍'}</span>
@@ -927,6 +992,7 @@ const RastiApp = (() => {
     if (!backdrop || !content) return;
     content.innerHTML = htmlContent;
     backdrop.classList.add('open');
+    syncMuteButtons();
   }
 
   function closeModal() {
@@ -982,9 +1048,12 @@ const RastiApp = (() => {
             </div>
           </div>
 
-          <div style="display:flex;gap:8px;margin-right:42px;">
+          <div style="display:flex;gap:8px;margin-right:42px;align-items:center;">
             <button type="button" class="btn-rasti btn-rasti-yellow" style="padding:8px 14px;font-size:0.82rem;" onclick="RastiApp.speakWorldStory('${w.id}')">
               🔊 ESCUCHAR HISTORIA
+            </button>
+            <button type="button" class="btn-rasti btn-rasti-white js-mute-toggle-btn" data-mute-style="text" style="padding:8px 12px;font-size:0.78rem;" onclick="RastiApp.toggleAudioMute()">
+              🔇 MUTEAR
             </button>
           </div>
         </div>
@@ -1027,7 +1096,7 @@ const RastiApp = (() => {
           </div>
         </div>
 
-        <div style="display:flex;gap:8px;margin-right:42px;">
+        <div style="display:flex;gap:8px;margin-right:42px;align-items:center;">
           ${w.id === 'reino' ? `
             <button type="button" class="btn-rasti btn-rasti-white" style="padding:7px 12px;font-size:0.78rem;" onclick="RastiApp.openWorldModal('reino', null, true)">
               📖 HISTORIA DEL REINO
@@ -1036,6 +1105,9 @@ const RastiApp = (() => {
           <button type="button" class="btn-rasti btn-rasti-yellow" style="padding:7px 14px;font-size:0.8rem;"
                   onclick="${w.id === 'reino' && chosenMission.num === 1 ? `RastiApp.speakMissionStory('reino', 1)` : `RastiApp.speakWorldStory('${w.id}')`}">
             🔊 ESCUCHAR
+          </button>
+          <button type="button" class="btn-rasti btn-rasti-white js-mute-toggle-btn" data-mute-style="text" style="padding:7px 11px;font-size:0.76rem;" onclick="RastiApp.toggleAudioMute()">
+            🔇 MUTEAR
           </button>
         </div>
       </div>
@@ -1064,10 +1136,16 @@ const RastiApp = (() => {
         </div>
       </div>
 
-      <!-- TARJETA VISUAL DEL NIVEL SELECCIONADO (Con imagen de puente destruido y descripción en Nivel 1) -->
+      <!-- TARJETA VISUAL DEL NIVEL SELECCIONADO (Candado en niveles bloqueados; puente destruido en Nivel 1) -->
       <div class="level-visual-action-card" style="align-items:center;gap:14px;">
         <div class="level-build-preview-box" style="flex:1;align-items:center;">
-          <img src="${previewImg}" alt="${chosenMission.title}" style="width:145px;height:115px;object-fit:cover;border-radius:16px;border:3px solid var(--rasti-cyan);flex-shrink:0;" />
+          ${chosenMission.status === 'locked' ? `
+            <div class="locked-level-padlock-box" aria-label="Nivel bloqueado">
+              <span>🔒</span>
+            </div>
+          ` : `
+            <img src="${previewImg}" alt="${chosenMission.title}" style="width:145px;height:115px;object-fit:cover;border-radius:16px;border:3px solid var(--rasti-cyan);flex-shrink:0;" />
+          `}
           <div style="flex:1;">
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
               <span style="background:var(--rasti-light);color:var(--rasti-blue);font-family:var(--font-btn);font-weight:700;font-size:0.75rem;padding:3px 10px;border-radius:999px;">
@@ -1174,10 +1252,14 @@ const RastiApp = (() => {
         </div>
       </div>
 
-      <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-top:10px;">
+      <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:10px;flex-wrap:wrap;">
         <button type="button" class="btn-rasti btn-rasti-build" style="padding:12px 28px;font-size:1.05rem;"
                 onclick="RastiApp.confirmScannedBuild('${buildTitle}', '${worldName}', '${imgPath}', ${starsReward})">
           📸 ¡CAPTURAR Y GANAR +${starsReward} ⭐!
+        </button>
+        <button type="button" class="btn-rasti btn-rasti-white js-mute-toggle-btn" data-mute-style="text" style="padding:11px 16px;font-size:0.86rem;"
+                onclick="RastiApp.toggleAudioMute()">
+          🔇 MUTEAR
         </button>
       </div>
     `;
@@ -1271,6 +1353,11 @@ const RastiApp = (() => {
 
     overlay.style.display = 'flex';
     inner.innerHTML = `
+      <div style="position:absolute;top:16px;right:18px;z-index:20;">
+        <button type="button" class="btn-rasti btn-rasti-white js-mute-toggle-btn" data-mute-style="text" style="padding:8px 14px;font-size:0.84rem;" onclick="RastiApp.toggleAudioMute()">
+          🔇 MUTEAR
+        </button>
+      </div>
       <div style="text-align:center;color:#ffffff;padding:24px;animation:popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);">
         <div style="font-size:4.2rem;margin-bottom:10px;">✅</div>
         <h2 style="font-family:var(--font-title);font-size:2.6rem;color:var(--rasti-yellow);text-shadow:0 4px 16px rgba(0,0,0,0.5);">
@@ -1281,6 +1368,7 @@ const RastiApp = (() => {
         </p>
       </div>
     `;
+    syncMuteButtons();
 
     playArgentineVoice('construccion_exitosa.mp3', '¡Construcción exitosa!');
 
@@ -1299,19 +1387,34 @@ const RastiApp = (() => {
       <video id="rasti-story-video-player"
              src="assets/video/reino-nivel1-historia.mp4"
              autoplay
-             controls
              playsinline
-             style="width:100%;height:100%;object-fit:contain;background:#000;"></video>
-      <button type="button"
-              class="btn-rasti btn-rasti-build"
-              onclick="RastiApp.closeFullscreenStoryVideo()"
-              style="position:absolute;top:16px;right:18px;z-index:20;padding:8px 18px;font-size:0.9rem;">
-        ✕ CERRAR VIDEO
-      </button>
+             disablePictureInPicture
+             controlsList="nodownload noplaybackrate nofullscreen"
+             oncontextmenu="return false;"
+             style="width:100%;height:100%;object-fit:contain;background:#000;pointer-events:none;"></video>
+      <div style="position:absolute;top:16px;right:18px;z-index:20;display:flex;align-items:center;gap:10px;">
+        <button type="button"
+                class="btn-rasti btn-rasti-white js-mute-toggle-btn"
+                data-mute-style="text"
+                onclick="RastiApp.toggleAudioMute()"
+                style="padding:8px 14px;font-size:0.86rem;">
+          🔇 MUTEAR
+        </button>
+        <button type="button"
+                class="btn-rasti btn-rasti-build"
+                onclick="RastiApp.closeFullscreenStoryVideo()"
+                style="padding:8px 18px;font-size:0.9rem;">
+          ✕ CERRAR VIDEO
+        </button>
+      </div>
     `;
+
+    syncMuteButtons();
 
     const vid = document.getElementById('rasti-story-video-player');
     if (vid) {
+      vid.controls = false;
+      vid.muted = state.isMuted;
       vid.play().catch(() => {});
       vid.onended = () => {
         showToast('🎉 ¡Completaste el Nivel 1 de Reino Perdido!', '🏰');
@@ -1362,6 +1465,9 @@ const RastiApp = (() => {
       <div style="display:flex;justify-content:center;gap:12px;">
         <button type="button" class="btn-rasti btn-rasti-primary" onclick="RastiApp.speakWorldStory('${w.id}')">
           ▶ ESCUCHAR HISTORIA
+        </button>
+        <button type="button" class="btn-rasti btn-rasti-white js-mute-toggle-btn" data-mute-style="text" onclick="RastiApp.toggleAudioMute()">
+          🔇 MUTEAR
         </button>
       </div>
     `;
@@ -1414,9 +1520,14 @@ const RastiApp = (() => {
           <div style="background:#fef9c3;border:1.5px solid #eab308;border-radius:14px;padding:9px 12px;font-size:0.8rem;color:#713f12;font-family:var(--font-btn);">
             ⏳ <strong>Revisión por Moderador Humano</strong>
           </div>
-          <button type="button" class="btn-rasti btn-rasti-yellow" style="margin-top:4px;width:100%;padding:12px 16px;font-size:0.95rem;" onclick="RastiApp.submitCreationForModeration()">
-            📸 SACAR FOTO Y PUBLICAR ✓
-          </button>
+          <div style="display:flex;gap:8px;margin-top:4px;">
+            <button type="button" class="btn-rasti btn-rasti-yellow" style="flex:1;padding:12px 14px;font-size:0.9rem;" onclick="RastiApp.submitCreationForModeration()">
+              📸 SACAR FOTO Y PUBLICAR ✓
+            </button>
+            <button type="button" class="btn-rasti btn-rasti-white js-mute-toggle-btn" data-mute-style="action-icon" style="padding:10px 13px;font-size:1rem;" onclick="RastiApp.toggleAudioMute()" title="Silenciar / Activar audio">
+              🔇
+            </button>
+          </div>
         </div>
       </div>
     `;
@@ -1483,6 +1594,7 @@ const RastiApp = (() => {
             <div style="font-family:var(--font-btn);font-weight:700;color:var(--rasti-navy);">${post.author}</div>
           </div>
           <h2 style="font-family:var(--font-title);font-size:1.45rem;color:var(--rasti-navy);">${post.title}</h2>
+          ${post.desc ? `<p style="font-family:var(--font-btn);font-size:0.86rem;line-height:1.4;color:#334155;">${post.desc}</p>` : ''}
           <div style="display:flex;gap:8px;">
             <span class="portal-pill-tag">🧱 ${post.blocksUsed} bloques</span>
           </div>
@@ -1545,8 +1657,9 @@ const RastiApp = (() => {
     playTone('pop');
     const u = RASTI_DATA.user;
 
-    // Restricción para padres mediante correo electrónico (Mockup)
+    // Restricción para padres mediante correo electrónico precargado + botón Verificar
     if (!skipGate && !state.parentPanelUnlocked) {
+      const savedEmail = (u.parentEmail || 'adulto.responsable@ejemplo.com').trim();
       const gateHtml = `
         <div style="text-align:center;padding:8px 10px;">
           <span style="background:#fef3c7;border:2px solid #f59e0b;color:#78350f;padding:5px 14px;border-radius:999px;font-family:var(--font-btn);font-size:0.8rem;font-weight:700;">
@@ -1556,17 +1669,15 @@ const RastiApp = (() => {
             VERIFICACIÓN PARENTAL
           </h2>
           <p style="font-family:var(--font-btn);font-size:0.9rem;color:#334155;max-width:480px;margin:6px auto 14px;">
-            Ingresá un correo electrónico de adulto responsable para acceder al panel de supervisión, permisos de comunidad e historial.
+            Tocá el botón «Verificar» para confirmar tu correo de adulto responsable y acceder al panel de supervisión, permisos de comunidad e historial.
           </p>
-          <div style="background:#fff;border:2.5px solid #bae6fd;border-radius:20px;padding:16px;max-width:420px;margin:0 auto 12px;display:flex;flex-direction:column;gap:12px;">
-            <input type="email"
-                   id="settings-parent-email"
-                   class="onb-text-input"
-                   value="${u.parentEmail || ''}"
-                   placeholder="ejemplo@correo.com"
-                   style="width:100%;text-align:center;" />
-            <button type="button" class="btn-rasti btn-rasti-primary" onclick="RastiApp.unlockParentalPanel()">
-              🔓 VERIFICAR E INGRESAR
+          <div style="background:#fff;border:2.5px solid #bae6fd;border-radius:20px;padding:16px;max-width:420px;margin:0 auto 12px;display:flex;flex-direction:column;gap:12px;align-items:center;">
+            <div class="parent-email-static-pill" style="width:100%;justify-content:center;">
+              <span>📧</span>
+              <strong>${savedEmail}</strong>
+            </div>
+            <button type="button" class="btn-rasti btn-rasti-primary" style="width:100%;" onclick="RastiApp.unlockParentalPanel()">
+              ✓ VERIFICAR
             </button>
           </div>
         </div>
@@ -1668,18 +1779,9 @@ const RastiApp = (() => {
   }
 
   function unlockParentalPanel() {
-    const emailEl = document.getElementById('settings-parent-email');
-    const val = (emailEl ? emailEl.value : '').trim();
-    if (val.length >= 3 && val.includes('@')) {
-      RASTI_DATA.user.parentEmail = val;
-      state.parentPanelUnlocked = true;
-      playTone('success');
-      openSettingsModal(true);
-    } else {
-      playTone('click');
-      showToast('🔒 Ingresá un correo electrónico válido (ej: padre@correo.com) para continuar.', '📧');
-      emailEl?.focus();
-    }
+    state.parentPanelUnlocked = true;
+    playTone('success');
+    openSettingsModal(true);
   }
 
   function toggleParentalConsentFromPanel() {
@@ -1809,6 +1911,7 @@ const RastiApp = (() => {
   function init() {
     preventMobileZoom();
     syncMobileLandscapeViewport();
+    syncMuteButtons();
     updateTopHud();
     renderPersonalizacion();
     renderModos();
@@ -1856,6 +1959,7 @@ const RastiApp = (() => {
     openFamiliaFromInicio,
     setAgeGroup,
     speakWelcome,
+    toggleAudioMute,
     toggleFullscreen,
     setCharacterGender,
     selectBaseProfile,
