@@ -806,6 +806,24 @@ const RastiApp = (() => {
     renderFamiliaGallery();
   }
 
+  function syncModosDesafiosMode() {
+    const isDesafios = (state.modosView === 'familia' && state.familiaTab === 'desafíos');
+    document.getElementById('screen-modos')?.classList.toggle('familia-desafios-mode', isDesafios);
+    document.getElementById('modos-view-familia')?.classList.toggle('familia-desafios-mode', isDesafios);
+
+    const gridEl = document.getElementById('familia-gallery-grid');
+    const desafiosEl = document.getElementById('familia-desafios-stage');
+    if (gridEl) gridEl.style.display = isDesafios ? 'none' : 'grid';
+    if (desafiosEl) desafiosEl.style.display = isDesafios ? 'flex' : 'none';
+    if (isDesafios) syncMuteButtons();
+  }
+
+  function speakFamiliaDesafio() {
+    const text = 'Desafío libre: Construí tu mascota. ¡Es momento de usar tu creatividad! Diseñá y construí una mascota con tus bloques Rasti. Puede ser un perro, un gato, un conejo, una tortuga o cualquier mascota que te imagines.';
+    showToast('🔊 Desafío libre: Construí tu mascota', '🐾');
+    playArgentineVoice(null, text);
+  }
+
   function switchModosView(viewName) {
     playTone('click');
     const isYoung = RASTI_DATA.user.ageGroup === '4-6';
@@ -819,6 +837,7 @@ const RastiApp = (() => {
     const familiaEl = document.getElementById('modos-view-familia');
     if (islandsEl) islandsEl.style.display = validView === 'islands' ? 'grid' : 'none';
     if (familiaEl) familiaEl.style.display = validView === 'familia' ? 'flex' : 'none';
+    syncModosDesafiosMode();
   }
 
   function renderFamiliaGallery() {
@@ -870,6 +889,7 @@ const RastiApp = (() => {
       btn.classList.toggle('active', btn.dataset.ftab === tabName);
     });
     renderFamiliaGallery();
+    syncModosDesafiosMode();
   }
 
   function toggleLikePost(postId) {
@@ -1489,7 +1509,7 @@ const RastiApp = (() => {
     openModal(html);
   }
 
-  function openShareCreationModal() {
+  function openShareCreationModal(customTitle = null) {
     if (!RASTI_DATA.user.publishingEnabled) {
       playTone('click');
       showToast('🔒 Las publicaciones están deshabilitadas por el adulto responsable en Control Parental.', '👨‍👩‍👧');
@@ -1498,13 +1518,17 @@ const RastiApp = (() => {
     playTone('pop');
     stopWebcamStream();
 
+    const modalHeading = customTitle
+      ? `📷 ${customTitle.toUpperCase()}`
+      : '📷 SACÁ UNA FOTO DE TU CREACIÓN RASTI';
+
     const html = `
       <div style="text-align:center;">
         <span style="background:var(--rasti-yellow);color:var(--rasti-navy);padding:4px 14px;border-radius:999px;font-family:var(--font-btn);font-size:0.76rem;font-weight:700;">
           🛡️ COMUNIDAD SEGURA • FAMILIA RASTI
         </span>
         <h2 style="font-family:var(--font-title);font-size:1.5rem;color:var(--rasti-navy);margin-top:6px;">
-          📷 SACÁ UNA FOTO DE TU CREACIÓN RASTI
+          ${modalHeading}
         </h2>
       </div>
 
@@ -1827,6 +1851,10 @@ const RastiApp = (() => {
     } else if (hash === 'familia') {
       navigate('modos');
       switchModosView('familia');
+    } else if (hash === 'familia-desafios') {
+      navigate('modos');
+      switchModosView('familia');
+      filterFamiliaTab('desafíos');
     } else if (hash === 'reino-nivel1') {
       openReinoNivel1Screen();
     } else if (hash === 'mundo-espacial') {
@@ -1992,6 +2020,7 @@ const RastiApp = (() => {
     saveAvatarCustomization,
     switchModosView,
     filterFamiliaTab,
+    speakFamiliaDesafio,
     toggleLikePost,
     toggleSavePost,
     reportPost,

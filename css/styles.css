@@ -4147,3 +4147,132 @@ body.mobile-short-landscape .reino-lvl1-cta-btn {
   font-size: 1.05rem;
   padding: 7px 16px 8px;
 }
+
+/* ==========================================================================
+   PESTAÑA DESAFÍOS DE FAMILIA RASTI (ESTÉTICA DESAFÍO LIBRE CONSTRUÍ TU MASCOTA)
+   ========================================================================== */
+#screen-modos.familia-desafios-mode {
+  background: url('../assets/ui/bg-familia-desafios.jpg') center center / cover no-repeat;
+  overflow: hidden;
+  gap: 6px;
+}
+
+#screen-modos.familia-desafios-mode .familia-subview {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  flex: 1;
+  gap: 4px;
+}
+
+#screen-modos.familia-desafios-mode .familia-share-top-btn {
+  display: none;
+}
+
+#screen-modos.familia-desafios-mode .familia-top-bar {
+  margin-top: -40px;
+  pointer-events: none;
+}
+
+#screen-modos.familia-desafios-mode .familia-nav-pills {
+  pointer-events: auto;
+  background: rgba(255, 255, 255, 0.94);
+  border: 2px solid #7ee8ff;
+  box-shadow: 0 5px 14px rgba(0, 28, 84, 0.3);
+}
+
+.familia-desafios-stage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 6px 12px 18px;
+}
+
+.familia-desafio-highlight {
+  font-family: var(--font-btn);
+  font-weight: 700;
+  font-size: 0.96rem;
+  color: var(--rasti-yellow);
+  line-height: 1.25;
+  margin-top: -3px;
+  text-shadow: 0 2px 6px rgba(0, 18, 60, 0.35);
+}
+
+.familia-desafio-features-box {
+  display: grid;
+  grid-template-columns: 1fr 1.5px 1.2fr;
+  align-items: center;
+  border: 2px solid rgba(255, 255, 255, 0.72);
+  border-radius: 22px;
+  padding: 10px 14px;
+  background: rgba(0, 28, 84, 0.22);
+}
+
+.familia-feature-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.familia-feature-svg {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 5px rgba(0, 18, 60, 0.35));
+}
+
+.familia-feature-text {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-btn);
+  font-weight: 700;
+  font-size: 0.88rem;
+  line-height: 1.12;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+  text-align: left;
+}
+
+body.mobile-forced-landscape .familia-desafios-stage {
+  padding: 0 10px 18px;
+  margin-top: -16px;
+}
+
+body.mobile-forced-landscape .familia-desafio-highlight {
+  font-size: 0.86rem;
+}
+
+body.mobile-forced-landscape .familia-desafio-features-box {
+  padding: 7px 10px;
+  border-radius: 18px;
+}
+
+body.mobile-forced-landscape .familia-feature-svg {
+  width: 30px;
+  height: 30px;
+}
+
+body.mobile-forced-landscape .familia-feature-text {
+  font-size: 0.78rem;
+}
+
+body.mobile-short-landscape .familia-desafios-stage {
+  padding: 0 8px 14px;
+  margin-top: -14px;
+}
+
+body.mobile-short-landscape .familia-desafio-highlight {
+  font-size: 0.78rem;
+}
+
+body.mobile-short-landscape .familia-feature-svg {
+  width: 26px;
+  height: 26px;
+}
+
+body.mobile-short-landscape .familia-feature-text {
+  font-size: 0.72rem;
+}
